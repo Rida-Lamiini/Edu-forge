@@ -12,8 +12,18 @@ import * as Animatable from "react-native-animatable";
 
 type CourseType = "biology" | "physics" | "chemistry";
 type ChapterType = "plants" | "animals" | "ecosystems";
-type SequenceType = "classification" | "anatomy" | "lifecycle";
-type ActivityType = "plants" | "oaks" | "birds";
+type SequenceType =
+  | "classification"
+  | "anatomy"
+  | "lifecycle"
+  | "scientific_method"
+  | "respiration";
+type ActivityType =
+  | "plants"
+  | "oaks"
+  | "birds"
+  | "cricket_experiment"
+  | "pond_respiration";
 
 type ActivitySelectorProps = {
   course: CourseType;
@@ -70,6 +80,34 @@ const classificationActivities: Activity[] = [
   },
 ];
 
+const scientificMethodActivities: Activity[] = [
+  {
+    id: "cricket_experiment",
+    title: "Démarche Expérimentale",
+    description:
+      "Apprendre les étapes de la démarche expérimentale avec l'exemple de la respiration des criquets",
+    icon: "flask",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#FF9800", "#F57C00"],
+    activityNumber: 1,
+    completed: false,
+  },
+];
+
+const respirationActivities: Activity[] = [
+  {
+    id: "pond_respiration",
+    title: "Modes de respiration dans un étang",
+    description:
+      "Classifiez les animaux d'un étang selon leurs modes et organes de respiration",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#26A69A", "#00796B"],
+    activityNumber: 1,
+    completed: false,
+  },
+];
+
 const sequenceData = {
   classification: {
     title: "Classification",
@@ -85,6 +123,16 @@ const sequenceData = {
     title: "Plant Lifecycle",
     activities: [],
     colors: ["#9C27B0", "#7B1FA2"],
+  },
+  scientific_method: {
+    title: "Méthode Scientifique",
+    activities: scientificMethodActivities,
+    colors: ["#FF9800", "#F57C00"],
+  },
+  respiration: {
+    title: "Respiration",
+    activities: respirationActivities,
+    colors: ["#26A69A", "#00796B"],
   },
 };
 

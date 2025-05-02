@@ -13,7 +13,12 @@ import * as Animatable from "react-native-animatable";
 
 type CourseType = "biology" | "physics" | "chemistry";
 type ChapterType = "plants" | "animals" | "ecosystems";
-type SequenceType = "classification" | "anatomy" | "lifecycle";
+type SequenceType =
+  | "classification"
+  | "anatomy"
+  | "lifecycle"
+  | "scientific_method"
+  | "respiration";
 
 type SequenceSelectorProps = {
   course: CourseType;
@@ -67,6 +72,31 @@ const plantSequences: Sequence[] = [
   },
 ];
 
+const animalSequences: Sequence[] = [
+  {
+    id: "scientific_method",
+    title: "Méthode Scientifique",
+    description:
+      "Apprendre les étapes de la démarche expérimentale à travers des exemples concrets",
+    icon: "flask",
+    iconType: "MaterialCommunityIcons",
+    activitiesCount: 1,
+    progress: 0,
+    colors: ["#FF9800", "#F57C00"],
+  },
+  {
+    id: "respiration",
+    title: "Respiration",
+    description:
+      "Découvrir les différents modes de respiration chez les animaux",
+    icon: "lungs",
+    iconType: "MaterialCommunityIcons",
+    activitiesCount: 1,
+    progress: 0,
+    colors: ["#26A69A", "#00796B"],
+  },
+];
+
 const chapterData = {
   plants: {
     title: "Plant Kingdom",
@@ -75,7 +105,7 @@ const chapterData = {
   },
   animals: {
     title: "Animal Kingdom",
-    sequences: [],
+    sequences: animalSequences,
     colors: ["#FF5722", "#E64A19"],
   },
   ecosystems: {

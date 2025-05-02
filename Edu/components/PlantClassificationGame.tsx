@@ -12,20 +12,28 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import InteractiveDecisionTree from "./InteractiveDecisionTree";
+import PlantDecisionTree from "./PlantDecisionTree";
 import * as Animatable from "react-native-animatable";
 import { Audio } from "expo-av";
 
 const { width } = Dimensions.get("window");
 
+type Language = "en" | "fr";
+
 type Plant = {
   id: number;
-  name: string;
+  name: {
+    en: string;
+    fr: string;
+  };
   iconName: string;
   iconType: "Ionicons" | "MaterialCommunityIcons";
   iconColor: string;
   type: "angiosperm" | "gymnosperm" | "pteridophyte" | "algae";
-  description: string;
+  description: {
+    en: string;
+    fr: string;
+  };
 };
 
 type PlantClassificationGameProps = {
@@ -35,47 +43,70 @@ type PlantClassificationGameProps = {
 const plants: Plant[] = [
   {
     id: 1,
-    name: "Green Beans",
+    name: {
+      en: "Green Beans",
+      fr: "Haricots Verts",
+    },
     iconName: "seed",
     iconType: "MaterialCommunityIcons",
     iconColor: "#4CAF50",
     type: "angiosperm",
-    description:
-      "Green beans have seeds inside their pods. They are flowering plants!",
+    description: {
+      en: "Green beans have seeds inside their pods. They are flowering plants!",
+      fr: "Les haricots verts ont des graines à l'intérieur de leurs gousses. Ce sont des plantes à fleurs !",
+    },
   },
   {
     id: 2,
-    name: "Pine Tree",
+    name: {
+      en: "Pine Tree",
+      fr: "Pin",
+    },
     iconName: "pine-tree",
     iconType: "MaterialCommunityIcons",
     iconColor: "#2E7D32",
     type: "gymnosperm",
-    description: "Pine trees have seeds on their cones, not inside fruits.",
+    description: {
+      en: "Pine trees have seeds on their cones, not inside fruits.",
+      fr: "Les pins ont des graines sur leurs cônes, pas à l'intérieur des fruits.",
+    },
   },
   {
     id: 3,
-    name: "Fern",
+    name: {
+      en: "Fern",
+      fr: "Fougère",
+    },
     iconName: "grass",
     iconType: "MaterialCommunityIcons",
     iconColor: "#8BC34A",
     type: "pteridophyte",
-    description:
-      "Ferns have stems and leaves but no seeds. They reproduce with spores!",
+    description: {
+      en: "Ferns have stems and leaves but no seeds. They reproduce with spores!",
+      fr: "Les fougères ont des tiges et des feuilles mais pas de graines. Elles se reproduisent avec des spores !",
+    },
   },
   {
     id: 4,
-    name: "Seaweed",
+    name: {
+      en: "Seaweed",
+      fr: "Algue Marine",
+    },
     iconName: "waves",
     iconType: "MaterialCommunityIcons",
     iconColor: "#00BCD4",
     type: "algae",
-    description: "Seaweed has no stems or leaves. It lives in water!",
+    description: {
+      en: "Seaweed has no stems or leaves. It lives in water!",
+      fr: "Les algues marines n'ont ni tiges ni feuilles. Elles vivent dans l'eau !",
+    },
   },
 ];
 
 export default function PlantClassificationGame({
   onBack,
 }: PlantClassificationGameProps) {
+  const [language, setLanguage] = useState<Language>("fr");
   const [currentPlant, setCurrentPlant] = useState<Plant>(plants[0]);
   const [showDecisionTree, setShowDecisionTree] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -83,9 +114,46 @@ export default function PlantClassificationGame({
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [showTryAgain, setShowTryAgain] = useState(false);
 
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  const translations = {
+    en: {
+      level: "Level",
+      score: "Score",
+      activityTitle: "What type of plant is this?",
+      showDecisionTree: "Show Decision Tree",
+      hideDecisionTree: "Hide Decision Tree",
+      questionText: "This plant is a:",
+      tryAgain: "Try again! Use the decision tree to help you.",
+      options: {
+        algae: "Algae",
+        gymnosperm: "Gymnosperm",
+        angiosperm: "Angiosperm",
+        pteridophyte: "Pteridophyte",
+      },
+    },
+    fr: {
+      level: "Niveau",
+      score: "Score",
+      activityTitle: "Quel type de plante est-ce ?",
+      showDecisionTree: "Afficher la clé de détermination",
+      hideDecisionTree: "Masquer la clé de détermination",
+      questionText: "Cette plante est une :",
+      tryAgain:
+        "Essayez encore ! Utilisez la clé de détermination pour vous aider.",
+      options: {
+        algae: "Algue",
+        gymnosperm: "Gymnosperme",
+        angiosperm: "Angiosperme",
+        pteridophyte: "Ptéridophyte",
+      },
+    },
+  };
+
+  const t = translations[language];
 
   useEffect(() => {
     // Animate the plant card when it appears
@@ -105,7 +173,8 @@ export default function PlantClassificationGame({
     // Reset state for new plant
     setSelectedAnswer(null);
     setIsCorrect(null);
-  }, [currentPlant]);
+    setShowTryAgain(false);
+  }, [currentPlant, language]);
 
   async function playSound(isCorrect: boolean) {
     const soundFile = isCorrect
@@ -150,7 +219,20 @@ export default function PlantClassificationGame({
         setCurrentPlant(plants[nextIndex]);
         setShowDecisionTree(false);
       }, 1500);
+    } else {
+      setShowTryAgain(true);
     }
+  };
+
+  const handleTryAgain = () => {
+    setSelectedAnswer(null);
+    setIsCorrect(null);
+    setShowTryAgain(false);
+    setShowDecisionTree(true);
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === "en" ? "fr" : "en");
   };
 
   const renderIcon = (plant: Plant, size: number) => {
@@ -183,9 +265,18 @@ export default function PlantClassificationGame({
         style={styles.background}
       />
 
-      <View style={styles.scoreContainer}>
+      <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#4CAF50" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={toggleLanguage}
+          style={styles.languageButton}
+        >
+          <Text style={styles.languageButtonText}>
+            {language === "en" ? "FR" : "EN"}
+          </Text>
         </TouchableOpacity>
 
         <Animatable.View
@@ -198,7 +289,9 @@ export default function PlantClassificationGame({
             colors={["#4CAF50", "#2E7D32"]}
             style={styles.levelBadge}
           >
-            <Text style={styles.levelText}>Level {level}</Text>
+            <Text style={styles.levelText}>
+              {t.level} {level}
+            </Text>
           </LinearGradient>
         </Animatable.View>
 
@@ -207,7 +300,9 @@ export default function PlantClassificationGame({
             colors={["#FF5252", "#D32F2F"]}
             style={styles.scoreBadge}
           >
-            <Text style={styles.scoreText}>Score: {score}</Text>
+            <Text style={styles.scoreText}>
+              {t.score}: {score}
+            </Text>
           </LinearGradient>
         </Animatable.View>
       </View>
@@ -219,7 +314,7 @@ export default function PlantClassificationGame({
         >
           <Text style={styles.activityNumber}>1</Text>
         </LinearGradient>
-        <Text style={styles.activityTitle}>What type of plant is this?</Text>
+        <Text style={styles.activityTitle}>{t.activityTitle}</Text>
       </View>
 
       <Animated.View
@@ -244,7 +339,7 @@ export default function PlantClassificationGame({
             {renderIcon(currentPlant, width * 0.25)}
           </Animatable.View>
         </LinearGradient>
-        <Text style={styles.plantName}>{currentPlant.name}</Text>
+        <Text style={styles.plantName}>{currentPlant.name[language]}</Text>
       </Animated.View>
 
       <Animatable.View animation="fadeIn" delay={300}>
@@ -264,7 +359,7 @@ export default function PlantClassificationGame({
               color="white"
             />
             <Text style={styles.helpButtonText}>
-              {showDecisionTree ? "Hide Decision Tree" : "Show Decision Tree"}
+              {showDecisionTree ? t.hideDecisionTree : t.showDecisionTree}
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -275,7 +370,7 @@ export default function PlantClassificationGame({
           animation="fadeIn"
           style={styles.decisionTreeContainer}
         >
-          <InteractiveDecisionTree onSelect={handleAnswer} />
+          <PlantDecisionTree onSelect={handleAnswer} language={language} />
         </Animatable.View>
       )}
 
@@ -284,14 +379,22 @@ export default function PlantClassificationGame({
         delay={500}
         style={styles.answerContainer}
       >
-        <Text style={styles.questionText}>This plant is a:</Text>
+        <Text style={styles.questionText}>{t.questionText}</Text>
 
         <View style={styles.optionsGrid}>
           {[
-            { label: "Algae", value: "algae", icon: "waves" },
-            { label: "Gymnosperm", value: "gymnosperm", icon: "pine-tree" },
-            { label: "Angiosperm", value: "angiosperm", icon: "seed" },
-            { label: "Pteridophyte", value: "pteridophyte", icon: "grass" },
+            { label: t.options.algae, value: "algae", icon: "waves" },
+            {
+              label: t.options.gymnosperm,
+              value: "gymnosperm",
+              icon: "pine-tree",
+            },
+            { label: t.options.angiosperm, value: "angiosperm", icon: "seed" },
+            {
+              label: t.options.pteridophyte,
+              value: "pteridophyte",
+              icon: "grass",
+            },
           ].map((option) => (
             <TouchableOpacity
               key={option.value}
@@ -340,12 +443,24 @@ export default function PlantClassificationGame({
           ))}
         </View>
 
-        {isCorrect === false && (
-          <Animatable.View animation="shake" style={styles.feedbackContainer}>
+        {isCorrect === false && showTryAgain && (
+          <Animatable.View animation="fadeIn" style={styles.feedbackContainer}>
             <Ionicons name="information-circle" size={24} color="#FF5252" />
-            <Text style={styles.feedbackText}>
-              Try again! Use the decision tree to help you.
-            </Text>
+            <Text style={styles.feedbackText}>{t.tryAgain}</Text>
+            <TouchableOpacity
+              style={styles.tryAgainButton}
+              onPress={handleTryAgain}
+            >
+              <LinearGradient
+                colors={["#FF9800", "#F57C00"]}
+                style={styles.tryAgainButtonGradient}
+              >
+                <Text style={styles.tryAgainButtonText}>
+                  {language === "en" ? "Try Again" : "Réessayer"}
+                </Text>
+                <Ionicons name="refresh-cw" size={20} color="white" />
+              </LinearGradient>
+            </TouchableOpacity>
           </Animatable.View>
         )}
 
@@ -355,7 +470,9 @@ export default function PlantClassificationGame({
             style={styles.feedbackContainer}
           >
             <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
-            <Text style={styles.feedbackText}>{currentPlant.description}</Text>
+            <Text style={styles.feedbackText}>
+              {currentPlant.description[language]}
+            </Text>
           </Animatable.View>
         )}
       </Animatable.View>
@@ -377,7 +494,7 @@ const styles = StyleSheet.create({
     top: 0,
     height: "100%",
   },
-  scoreContainer: {
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -393,6 +510,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+  },
+  languageButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  languageButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#4CAF50",
   },
   levelBadge: {
     paddingHorizontal: 15,
@@ -577,5 +709,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#333",
     flex: 1,
+  },
+  tryAgainButton: {
+    borderRadius: 20,
+    overflow: "hidden",
+    marginLeft: 10,
+  },
+  tryAgainButtonGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  tryAgainButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    marginRight: 5,
   },
 });

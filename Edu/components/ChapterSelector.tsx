@@ -48,7 +48,7 @@ const biologyChapters: Chapter[] = [
       "Explore the fascinating diversity of animals and their characteristics",
     icon: "paw",
     iconType: "MaterialCommunityIcons",
-    sequencesCount: 0,
+    sequencesCount: 2,
     progress: 0,
   },
   {
