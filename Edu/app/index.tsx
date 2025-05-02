@@ -10,6 +10,7 @@ import ActivitySelector from "../components/ActivitySelector";
 import PlantClassificationGame from "../components/PlantClassificationGame";
 import OakClassificationGame from "../components/OakClassificationGame";
 import BirdClassificationGame from "../components/BirdClassificationGame";
+import PondRespirationMatch from "../components/PondRespirationMatch";
 
 type CourseType = "biology" | "physics" | "chemistry" | null;
 type ChapterType = "plants" | "animals" | "ecosystems" | null;
@@ -89,6 +90,8 @@ export default function HomeScreen() {
         return <OakClassificationGame onBack={handleBackToActivities} />;
       case "birds":
         return <BirdClassificationGame onBack={handleBackToActivities} />;
+      case "pond":
+        return <PondRespirationMatch onBack={handleBackToActivities} />;
       default:
         return (
           <ActivitySelector
@@ -113,6 +116,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f9fc",
+    backgroundColor: "#f5f9fk",
   },
 });
