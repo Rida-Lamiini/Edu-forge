@@ -48,9 +48,9 @@ type Activity = {
 const classificationActivities: Activity[] = [
   {
     id: "plants",
-    title: "Plant Classification",
+    title: "Activité 1",
     description:
-      "Learn to identify different types of plants based on their characteristics",
+      "Composantes des écosystèmes.",
     icon: "leaf",
     iconType: "MaterialCommunityIcons",
     colors: ["#4CAF50", "#2E7D32"],
@@ -70,9 +70,9 @@ const classificationActivities: Activity[] = [
   },
   {
     id: "birds",
-    title: "Bird Identification",
+    title: "Activité 2",
     description:
-      "Learn to identify four types of tit birds using a determination key",
+      "Unité des écosystèmes.",
     icon: "bird",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1976D2"],
@@ -81,9 +81,9 @@ const classificationActivities: Activity[] = [
   },
   {
     id: "oaks",
-    title: "Oak Tree Identification",
+    title: "Activité 3",
     description:
-      "Learn to identify three types of oak trees using a determination key",
+      "Classification des écosystèmes.",
     icon: "tree",
     iconType: "MaterialCommunityIcons",
     colors: ["#FF9800", "#F57C00"],

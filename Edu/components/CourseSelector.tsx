@@ -31,18 +31,18 @@ type Course = {
 const courses: Course[] = [
   {
     id: "biology",
-    title: "Biology",
+    title: "Chapitre 1",
     description:
-      "Explore the fascinating world of living organisms and natural systems",
+      "Les écosystèmes et leurs composantes.",
     icon: "leaf",
     iconType: "Ionicons",
     colors: ["#4CAF50", "#2E7D32"],
-    chaptersCount: 3,
+    chaptersCount: 2,
   },
   {
     id: "physics",
-    title: "Physics",
-    description: "Discover the fundamental laws that govern the universe",
+    title: "Chapitre 2",
+    description: "Les systèmes organiques selon l’environnement.",
     icon: "atom",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1565C0"],
@@ -50,8 +50,8 @@ const courses: Course[] = [
   },
   {
     id: "chemistry",
-    title: "Chemistry",
-    description: "Learn about elements, compounds, and chemical reactions",
+    title: "Chapitre 3",
+    description: "La cellule, unité structurale et fonctionnelle du vivant.",
     icon: "flask",
     iconType: "MaterialCommunityIcons",
     colors: ["#9C27B0", "#7B1FA2"],
@@ -84,9 +84,9 @@ export default function CourseSelector({
       />
 
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Science Explorer</Text>
+        <Text style={styles.headerTitle}>Science de la vie et de la terre</Text>
         <Text style={styles.headerSubtitle}>
-          Choose a course to begin your learning journey
+          Livret de l'éléve
         </Text>
       </View>
 
@@ -125,7 +125,7 @@ export default function CourseSelector({
                       color="#666"
                     />
                     <Text style={styles.courseStatsText}>
-                      {course.chaptersCount} Chapters
+                      {course.chaptersCount} Séquences
                     </Text>
                   </View>
 
@@ -136,7 +136,7 @@ export default function CourseSelector({
                         { color: course.colors[0] },
                       ]}
                     >
-                      Start Learning
+                      Commencer
                     </Text>
                     <Ionicons
                       name="chevron-forward"
