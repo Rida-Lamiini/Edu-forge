@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,16 +8,19 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
-  Animated,
   Platform,
   useWindowDimensions,
-  PanResponder,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
 import { Audio } from "expo-av";
 import { BlurView } from "expo-blur";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { DragDropProvider } from "./DragDropContext";
+import { DragStartPoint } from "./DragStartPoint";
+import { DragEndPoint } from "./DragEndPoint";
+import { DragContent } from "./DragContent";
 
 type RespirationMode = "aerial" | "aquatic" | "both";
 type RespirationOrgan = "gills" | "lungs" | "skin";
@@ -60,23 +63,15 @@ export default function PondRespirationActivity({
   const [score, setScore] = useState(0);
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [draggingAnimal, setDraggingAnimal] = useState<Animal | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const [infoAnimal, setInfoAnimal] = useState<Animal | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [categoryRefs, setCategoryRefs] = useState<{
-    [key: string]: { x: number; y: number; width: number; height: number };
-  }>({});
   const [showHint, setShowHint] = useState(false);
   const [expandedCategory, setExpandedCategory] =
     useState<CategoryPosition | null>(null);
-
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-  const pan = useRef(new Animated.ValueXY()).current;
 
   // Define the animals
   const initialAnimals: Animal[] = [
@@ -178,6 +173,26 @@ export default function PondRespirationActivity({
     setCategories(newCategories);
   }, []);
 
+  // Initialize animals with random positions in the pond
+  useEffect(() => {
+    const animalsWithPositions = initialAnimals.map((animal, index) => {
+      const angle = (index / initialAnimals.length) * 2 * Math.PI;
+      const radius = isMobile ? 60 : 80;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+
+      return {
+        ...animal,
+        initialX: x,
+        initialY: y,
+        x,
+        y,
+      };
+    });
+
+    setAnimals(animalsWithPositions);
+  }, [isMobile]);
+
   // French translations
   const t = {
     title: "Les modes de respiration dans un étang",
@@ -243,107 +258,6 @@ export default function PondRespirationActivity({
     },
   };
 
-  // Set up pan responder for drag and drop
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-        pan.setValue({ x: 0, y: 0 });
-      },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: (e, gesture) => {
-        pan.flattenOffset();
-
-        if (!draggingAnimal) return;
-
-        // Check if the animal is dropped on a category
-        let droppedOnCategory = false;
-        let targetCategory: CategoryPosition | null = null;
-
-        Object.entries(categoryRefs).forEach(([categoryId, categoryRect]) => {
-          if (
-            gesture.moveX > categoryRect.x &&
-            gesture.moveX < categoryRect.x + categoryRect.width &&
-            gesture.moveY > categoryRect.y &&
-            gesture.moveY < categoryRect.y + categoryRect.height
-          ) {
-            droppedOnCategory = true;
-            targetCategory = categoryId as CategoryPosition;
-          }
-        });
-
-        if (droppedOnCategory && targetCategory) {
-          // Update animal position
-          const updatedAnimals = animals.map((animal) => {
-            if (animal.id === draggingAnimal.id) {
-              return {
-                ...animal,
-                position: targetCategory as AnimalPosition,
-                x: 0,
-                y: 0,
-              };
-            }
-            return animal;
-          });
-
-          setAnimals(updatedAnimals);
-          playSound(true);
-
-          // Expand the category where the animal was dropped
-          setExpandedCategory(targetCategory);
-        } else {
-          // Return to original position
-          Animated.spring(pan, {
-            toValue: { x: 0, y: 0 },
-            useNativeDriver: false,
-          }).start();
-        }
-
-        setDraggingAnimal(null);
-      },
-    })
-  ).current;
-
-  useEffect(() => {
-    // Initialize animals with random positions in the pond
-    const animalsWithPositions = initialAnimals.map((animal, index) => {
-      const angle = (index / initialAnimals.length) * 2 * Math.PI;
-      const radius = isMobile ? 60 : 80;
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius;
-
-      return {
-        ...animal,
-        initialX: x,
-        initialY: y,
-        x,
-        y,
-      };
-    });
-
-    setAnimals(animalsWithPositions);
-
-    // Animate in the content
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
-
   async function playSound(correct: boolean) {
     const soundFile = correct
       ? require("../assets/sounds/correct.mp3")
@@ -366,22 +280,30 @@ export default function PondRespirationActivity({
       : undefined;
   }, [sound]);
 
-  const handleAnimalPress = (animal: Animal) => {
-    if (animal.position !== "pond") return;
-    setDraggingAnimal(animal);
-  };
-
   const handleAnimalInfo = (animal: Animal) => {
     setInfoAnimal(animal);
     setShowInfo(true);
   };
 
-  const handleCategoryLayout = (categoryId: string, event: any) => {
-    const { x, y, width, height } = event.nativeEvent.layout;
-    setCategoryRefs((prev) => ({
-      ...prev,
-      [categoryId]: { x, y, width, height },
-    }));
+  const handleDropAnimal = (animal: Animal, categoryId: string) => {
+    // Update animal position
+    const updatedAnimals = animals.map((a) => {
+      if (a.id === animal.id) {
+        return {
+          ...a,
+          position: categoryId as AnimalPosition,
+          x: 0,
+          y: 0,
+        };
+      }
+      return a;
+    });
+
+    setAnimals(updatedAnimals);
+    playSound(true);
+
+    // Expand the category where the animal was dropped
+    setExpandedCategory(categoryId as CategoryPosition);
   };
 
   const handleCheckAnswer = () => {
@@ -482,12 +404,7 @@ export default function PondRespirationActivity({
   );
 
   const renderInstructions = () => (
-    <Animated.View
-      style={[
-        styles.instructionsContainer,
-        { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
-      ]}
-    >
+    <Animatable.View animation="fadeIn" style={styles.instructionsContainer}>
       <Text
         style={[
           styles.instructionsText,
@@ -514,16 +431,11 @@ export default function PondRespirationActivity({
           </Text>
         </LinearGradient>
       </TouchableOpacity>
-    </Animated.View>
+    </Animatable.View>
   );
 
   const renderPondImage = () => (
-    <Animated.View
-      style={[
-        styles.pondImageContainer,
-        { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
-      ]}
-    >
+    <Animatable.View animation="fadeIn" style={styles.pondImageContainer}>
       <Image
         source={require("../assets/images/pond-ecosystem.png")}
         style={responsiveStyles.pondImageSize}
@@ -533,61 +445,48 @@ export default function PondRespirationActivity({
       {animals
         .filter((animal) => animal.position === "pond")
         .map((animal) => (
-          <Animated.View
+          <View
             key={animal.id}
             style={[
               styles.animalContainer,
               {
-                transform:
-                  draggingAnimal?.id === animal.id
-                    ? [{ translateX: pan.x }, { translateY: pan.y }]
-                    : [],
                 top: 50 + (animal.y || 0),
                 left: 20 + (animal.x || 0),
               },
             ]}
-            {...(draggingAnimal?.id === animal.id
-              ? panResponder.panHandlers
-              : {})}
           >
-            <TouchableOpacity
-              style={[
-                styles.animalButton,
-                draggingAnimal?.id === animal.id && styles.draggingAnimalButton,
-              ]}
-              onPress={() => handleAnimalPress(animal)}
-              onLongPress={() => handleAnimalInfo(animal)}
-            >
-              <View style={styles.animalNumberBadge}>
-                <Text style={styles.animalNumberText}>{animal.id}</Text>
-              </View>
-              <Image
-                source={animal.image}
-                style={{
-                  width: responsiveStyles.animalImageSize,
-                  height: responsiveStyles.animalImageSize,
-                }}
-                resizeMode="contain"
-              />
+            <DragStartPoint animal={animal}>
+              <TouchableOpacity
+                style={styles.animalButton}
+                onLongPress={() => handleAnimalInfo(animal)}
+                delayLongPress={500}
+              >
+                <View style={styles.animalNumberBadge}>
+                  <Text style={styles.animalNumberText}>{animal.id}</Text>
+                </View>
+                <Image
+                  source={animal.image}
+                  style={{
+                    width: responsiveStyles.animalImageSize,
+                    height: responsiveStyles.animalImageSize,
+                  }}
+                  resizeMode="contain"
+                />
 
-              {showHint && (
-                <Animatable.View animation="fadeIn" style={styles.hintBubble}>
-                  <Text style={styles.hintText}>{t.hints[animal.id]}</Text>
-                </Animatable.View>
-              )}
-            </TouchableOpacity>
-          </Animated.View>
+                {showHint && (
+                  <Animatable.View animation="fadeIn" style={styles.hintBubble}>
+                    <Text style={styles.hintText}>{t.hints[animal.id]}</Text>
+                  </Animatable.View>
+                )}
+              </TouchableOpacity>
+            </DragStartPoint>
+          </View>
         ))}
-    </Animated.View>
+    </Animatable.View>
   );
 
   const renderCategories = () => (
-    <Animated.View
-      style={[
-        styles.categoriesContainer,
-        { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
-      ]}
-    >
+    <Animatable.View animation="fadeIn" style={styles.categoriesContainer}>
       <View style={styles.categoriesHeader}>
         <View style={styles.organLabelsContainer}>
           <Text style={styles.organLabel}>{t.respirationOrgans.gills}</Text>
@@ -614,74 +513,83 @@ export default function PondRespirationActivity({
                 animation="fadeIn"
                 style={styles.categoryWrapper}
               >
-                <TouchableOpacity
-                  style={[
-                    styles.categoryCard,
-                    {
-                      height:
-                        isExpanded && animalsInCategory.length > 0
-                          ? responsiveStyles.categorySize * 1.5
-                          : responsiveStyles.categorySize,
-                      backgroundColor: `${category.color}20`, // 20% opacity
-                    },
-                    isExpanded && styles.expandedCategory,
-                  ]}
-                  onPress={() => toggleCategoryExpansion(category.id)}
-                  onLayout={(event) => handleCategoryLayout(category.id, event)}
+                <DragEndPoint
+                  categoryId={category.id}
+                  onDrop={handleDropAnimal}
                 >
-                  <LinearGradient
-                    colors={[category.color, `${category.color}80`]}
-                    style={styles.categoryHeader}
+                  <TouchableOpacity
+                    style={[
+                      styles.categoryCard,
+                      {
+                        height:
+                          isExpanded && animalsInCategory.length > 0
+                            ? responsiveStyles.categorySize * 1.5
+                            : responsiveStyles.categorySize,
+                        backgroundColor: `${category.color}20`, // 20% opacity
+                      },
+                      isExpanded && styles.expandedCategory,
+                    ]}
+                    onPress={() => toggleCategoryExpansion(category.id)}
                   >
-                    <MaterialCommunityIcons
-                      name={category.icon}
-                      size={24}
-                      color="white"
-                    />
-                  </LinearGradient>
-
-                  {animalsInCategory.length === 0 ? (
-                    <View style={styles.emptyCategory}>
-                      <Text style={styles.emptyCategoryText}>{t.dropHere}</Text>
-                    </View>
-                  ) : (
-                    <View style={styles.categoryAnimals}>
-                      {animalsInCategory.map((animal) => (
-                        <View key={animal.id} style={styles.categoryAnimal}>
-                          <View style={styles.categoryAnimalNumberBadge}>
-                            <Text style={styles.categoryAnimalNumberText}>
-                              {animal.id}
-                            </Text>
-                          </View>
-                          <Image
-                            source={animal.image}
-                            style={styles.categoryAnimalImage}
-                            resizeMode="contain"
-                          />
-                        </View>
-                      ))}
-                    </View>
-                  )}
-
-                  {isExpanded && animalsInCategory.length > 0 && (
-                    <Animatable.View
-                      animation="fadeIn"
-                      style={styles.categoryDetails}
+                    <LinearGradient
+                      colors={[category.color, `${category.color}80`]}
+                      style={styles.categoryHeader}
                     >
-                      {animalsInCategory.map((animal) => (
-                        <Text key={animal.id} style={styles.categoryDetailText}>
-                          {animal.id}. {animal.name}
+                      <MaterialCommunityIcons
+                        name={category.icon}
+                        size={24}
+                        color="white"
+                      />
+                    </LinearGradient>
+
+                    {animalsInCategory.length === 0 ? (
+                      <View style={styles.emptyCategory}>
+                        <Text style={styles.emptyCategoryText}>
+                          {t.dropHere}
                         </Text>
-                      ))}
-                    </Animatable.View>
-                  )}
-                </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <View style={styles.categoryAnimals}>
+                        {animalsInCategory.map((animal) => (
+                          <View key={animal.id} style={styles.categoryAnimal}>
+                            <View style={styles.categoryAnimalNumberBadge}>
+                              <Text style={styles.categoryAnimalNumberText}>
+                                {animal.id}
+                              </Text>
+                            </View>
+                            <Image
+                              source={animal.image}
+                              style={styles.categoryAnimalImage}
+                              resizeMode="contain"
+                            />
+                          </View>
+                        ))}
+                      </View>
+                    )}
+
+                    {isExpanded && animalsInCategory.length > 0 && (
+                      <Animatable.View
+                        animation="fadeIn"
+                        style={styles.categoryDetails}
+                      >
+                        {animalsInCategory.map((animal) => (
+                          <Text
+                            key={animal.id}
+                            style={styles.categoryDetailText}
+                          >
+                            {animal.id}. {animal.name}
+                          </Text>
+                        ))}
+                      </Animatable.View>
+                    )}
+                  </TouchableOpacity>
+                </DragEndPoint>
               </Animatable.View>
             );
           })}
         </View>
       </View>
-    </Animated.View>
+    </Animatable.View>
   );
 
   const renderActionButtons = () => (
@@ -782,49 +690,72 @@ export default function PondRespirationActivity({
     );
   };
 
+  const renderDragContent = () => (
+    <DragContent>
+      <View style={styles.dragContentContainer}>
+        <Image
+          source={animals.find((a) => a.id === 1)?.image}
+          style={{
+            width: responsiveStyles.animalImageSize,
+            height: responsiveStyles.animalImageSize,
+          }}
+          resizeMode="contain"
+        />
+      </View>
+    </DragContent>
+  );
+
   return (
-    <View
-      style={[styles.container, { padding: responsiveStyles.containerPadding }]}
-    >
-      <LinearGradient
-        colors={["#FFF3E0", "#FFE0B2", "#FFCC80"]}
-        style={styles.background}
-      />
-
-      {renderHeader()}
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[
-          styles.scrollContent,
-          isLandscape && styles.scrollContentLandscape,
-        ]}
-      >
-        {renderInstructions()}
-
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <DragDropProvider>
         <View
           style={[
-            styles.mainContent,
-            isLandscape && styles.mainContentLandscape,
+            styles.container,
+            { padding: responsiveStyles.containerPadding },
           ]}
         >
-          {renderPondImage()}
+          <LinearGradient
+            colors={["#FFF3E0", "#FFE0B2", "#FFCC80"]}
+            style={styles.background}
+          />
 
-          <View
-            style={[
-              styles.interactionArea,
-              isLandscape && styles.interactionAreaLandscape,
+          {renderHeader()}
+
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={[
+              styles.scrollContent,
+              isLandscape && styles.scrollContentLandscape,
             ]}
           >
-            {renderCategories()}
-            {renderFeedback()}
-            {renderActionButtons()}
-          </View>
-        </View>
-      </ScrollView>
+            {renderInstructions()}
 
-      {renderAnimalInfo()}
-    </View>
+            <View
+              style={[
+                styles.mainContent,
+                isLandscape && styles.mainContentLandscape,
+              ]}
+            >
+              {renderPondImage()}
+
+              <View
+                style={[
+                  styles.interactionArea,
+                  isLandscape && styles.interactionAreaLandscape,
+                ]}
+              >
+                {renderCategories()}
+                {renderFeedback()}
+                {renderActionButtons()}
+              </View>
+            </View>
+          </ScrollView>
+
+          {renderAnimalInfo()}
+          {renderDragContent()}
+        </View>
+      </DragDropProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -991,11 +922,18 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  draggingAnimalButton: {
-    backgroundColor: "rgba(255, 152, 0, 0.3)",
-    borderWidth: 2,
-    borderColor: "#FF9800",
-    transform: [{ scale: 1.1 }],
+  dragContentContainer: {
+    width: 60,
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
   },
   animalNumberBadge: {
     position: "absolute",
