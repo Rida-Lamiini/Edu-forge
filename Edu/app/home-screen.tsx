@@ -11,6 +11,7 @@ import OakClassificationGame from "../components/OakClassificationGame";
 import BirdClassificationGame from "../components/BirdClassificationGame";
 import ScientificMethodActivity from "../components/ScientificMethodActivity";
 import PondRespirationActivity from "../components/PondRespirationActivity";
+import PlantClassificationActivity from "../components/PlantClassificationActivity";
 
 type CourseType = "biology" | "physics" | "chemistry" | null;
 type ChapterType = "plants" | "animals" | "ecosystems" | null;
@@ -27,6 +28,7 @@ type ActivityType =
   | "birds"
   | "cricket_experiment"
   | "pond_respiration"
+  | "plant_classification"
   | null;
 
 export default function HomeScreen() {
@@ -95,6 +97,7 @@ export default function HomeScreen() {
       );
     }
 
+    // In the switch statement
     switch (selectedActivity) {
       case "plants":
         return <PlantClassificationGame onBack={handleBackToActivities} />;
@@ -106,6 +109,8 @@ export default function HomeScreen() {
         return <ScientificMethodActivity onBack={handleBackToActivities} />;
       case "pond_respiration":
         return <PondRespirationActivity onBack={handleBackToActivities} />;
+      case "plant_classification":
+        return <PlantClassificationActivity onBack={handleBackToActivities} />;
       default:
         return (
           <ActivitySelector

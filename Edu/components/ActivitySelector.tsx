@@ -23,7 +23,8 @@ type ActivityType =
   | "oaks"
   | "birds"
   | "cricket_experiment"
-  | "pond_respiration";
+  | "pond_respiration"
+  | "plant_classification";
 
 type ActivitySelectorProps = {
   course: CourseType;
@@ -57,6 +58,17 @@ const classificationActivities: Activity[] = [
     completed: false,
   },
   {
+    id: "plant_classification",
+    title: "Retrouvez le nom d'un végétal",
+    description:
+      "Utilisez l'arbre de décision pour identifier différents types de plantes",
+    icon: "tree",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#FF9800", "#F57C00"],
+    activityNumber: 2,
+    completed: false,
+  },
+  {
     id: "birds",
     title: "Bird Identification",
     description:
@@ -64,7 +76,7 @@ const classificationActivities: Activity[] = [
     icon: "bird",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1976D2"],
-    activityNumber: 2,
+    activityNumber: 3,
     completed: false,
   },
   {
@@ -75,7 +87,7 @@ const classificationActivities: Activity[] = [
     icon: "tree",
     iconType: "MaterialCommunityIcons",
     colors: ["#FF9800", "#F57C00"],
-    activityNumber: 3,
+    activityNumber: 4,
     completed: false,
   },
 ];
