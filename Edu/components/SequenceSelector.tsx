@@ -41,9 +41,9 @@ type Sequence = {
 const plantSequences: Sequence[] = [
   {
     id: "classification",
-    title: "Classification",
+    title: "Séance 01",
     description:
-      "Learn to identify and classify different types of plants and trees",
+      "Les composantes des différents écosystèmes.",
     icon: "leaf",
     iconType: "Ionicons",
     activitiesCount: 3,
@@ -52,7 +52,7 @@ const plantSequences: Sequence[] = [
   },
   {
     id: "anatomy",
-    title: "Plant Anatomy",
+    title: "Séance 02",
     description: "Explore the structure and parts of plants",
     icon: "sprout",
     iconType: "MaterialCommunityIcons",
@@ -60,16 +60,7 @@ const plantSequences: Sequence[] = [
     progress: 0,
     colors: ["#FF9800", "#F57C00"],
   },
-  {
-    id: "lifecycle",
-    title: "Plant Lifecycle",
-    description: "Understand how plants grow, reproduce, and develop",
-    icon: "flower",
-    iconType: "MaterialCommunityIcons",
-    activitiesCount: 0,
-    progress: 0,
-    colors: ["#9C27B0", "#7B1FA2"],
-  },
+
 ];
 
 const animalSequences: Sequence[] = [
@@ -99,12 +90,12 @@ const animalSequences: Sequence[] = [
 
 const chapterData = {
   plants: {
-    title: "Plant Kingdom",
+    title: "Séances",
     sequences: plantSequences,
     colors: ["#4CAF50", "#2E7D32"],
   },
   animals: {
-    title: "Animal Kingdom",
+    title: "Séances",
     sequences: animalSequences,
     colors: ["#FF5722", "#E64A19"],
   },
@@ -155,7 +146,7 @@ export default function SequenceSelector({
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{chapterInfo.title}</Text>
           <Text style={styles.headerSubtitle}>
-            Select a sequence to continue
+            Selectionner une Séance
           </Text>
         </LinearGradient>
       </View>

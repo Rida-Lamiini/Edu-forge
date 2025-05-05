@@ -33,9 +33,9 @@ type Chapter = {
 const biologyChapters: Chapter[] = [
   {
     id: "plants",
-    title: "Plant Kingdom",
+    title: "Séquence 1",
     description:
-      "Learn about the diverse world of plants and their classification",
+      "Diversité des écosystèmes et leur unité.",
     icon: "leaf",
     iconType: "Ionicons",
     sequencesCount: 3,
@@ -43,29 +43,20 @@ const biologyChapters: Chapter[] = [
   },
   {
     id: "animals",
-    title: "Animal Kingdom",
+    title: "Séquence 2",
     description:
-      "Explore the fascinating diversity of animals and their characteristics",
+      "Classification des êtres vivants.",
     icon: "paw",
     iconType: "MaterialCommunityIcons",
     sequencesCount: 2,
     progress: 0,
   },
-  {
-    id: "ecosystems",
-    title: "Ecosystems",
-    description:
-      "Understand how organisms interact with each other and their environment",
-    icon: "earth",
-    iconType: "MaterialCommunityIcons",
-    sequencesCount: 0,
-    progress: 0,
-  },
+ 
 ];
 
 const courseData = {
   biology: {
-    title: "Biology",
+    title: "Séquences",
     chapters: biologyChapters,
     colors: ["#4CAF50", "#2E7D32"],
   },
@@ -120,7 +111,7 @@ export default function ChapterSelector({
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{courseInfo.title}</Text>
           <Text style={styles.headerSubtitle}>
-            Select a chapter to continue
+            Selectionner une Séquence
           </Text>
         </LinearGradient>
       </View>
