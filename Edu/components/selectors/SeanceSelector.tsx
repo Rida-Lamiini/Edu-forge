@@ -11,117 +11,90 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
 
-type CourseType = "biology" | "physics" | "chemistry";
-type ChapterType = "plants" | "animals" | "ecosystems";
-type SequenceType =
-  | "classification"
-  | "anatomy"
-  | "lifecycle"
-  | "scientific_method"
-  | "respiration";
+type ChapitreType = "chapitre1" | "chapitre2" | "chapitre3";
+type SequenceType = "sequence1" | "sequence2";
+type SeanceType = "seance1" | "seance2" | "seance3";
 
-type SequenceSelectorProps = {
-  course: CourseType;
-  chapter: ChapterType;
-  onSelectSequence: (sequence: SequenceType) => void;
+type SeanceSelectorProps = {
+  chapitre: ChapitreType;
+  sequence: SequenceType;
+  onSelectSeance: (seance: SeanceType) => void;
   onBack: () => void;
 };
 
-type Sequence = {
-  id: SequenceType;
+type Seance = {
+  id: SeanceType;
   title: string;
   description: string;
   icon: string;
   iconType: "Ionicons" | "MaterialCommunityIcons";
+  colors: string[];
   activitiesCount: number;
   progress: number;
-  colors: string[];
 };
 
-const plantSequences: Sequence[] = [
+const sequence1Seances: Seance[] = [
   {
-    id: "classification",
-    title: "Séance 01",
-    description:
-      "Les composantes des différents écosystèmes.",
+    id: "seance1",
+    title: "Séance 1",
+    description: "Composantes des écosystèmes",
     icon: "leaf",
     iconType: "Ionicons",
+    colors: ["#4CAF50", "#2E7D32"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+  {
+    id: "seance2",
+    title: "Séance 2",
+    description: "Unité des écosystèmes",
+    icon: "earth",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#2196F3", "#1565C0"],
     activitiesCount: 3,
     progress: 0,
-    colors: ["#4CAF50", "#2E7D32"],
   },
   {
-    id: "anatomy",
-    title: "Séance 02",
-    description: "Explore the structure and parts of plants",
-    icon: "sprout",
+    id: "seance3",
+    title: "Séance 3",
+    description: "Classification des écosystèmes",
+    icon: "tree",
     iconType: "MaterialCommunityIcons",
-    activitiesCount: 0,
-    progress: 0,
     colors: ["#FF9800", "#F57C00"],
-  },
-
-];
-
-const animalSequences: Sequence[] = [
-  {
-    id: "scientific_method",
-    title: "Méthode Scientifique",
-    description:
-      "Apprendre les étapes de la démarche expérimentale à travers des exemples concrets",
-    icon: "flask",
-    iconType: "MaterialCommunityIcons",
-    activitiesCount: 1,
+    activitiesCount: 2,
     progress: 0,
-    colors: ["#FF9800", "#F57C00"],
-  },
-  {
-    id: "respiration",
-    title: "Respiration",
-    description:
-      "Découvrir les différents modes de respiration chez les animaux",
-    icon: "lungs",
-    iconType: "MaterialCommunityIcons",
-    activitiesCount: 1,
-    progress: 0,
-    colors: ["#26A69A", "#00796B"],
   },
 ];
 
-const chapterData = {
-  plants: {
-    title: "Séances",
-    sequences: plantSequences,
+const sequenceData = {
+  sequence1: {
+    title: "Séquence 1",
+    seances: sequence1Seances,
     colors: ["#4CAF50", "#2E7D32"],
   },
-  animals: {
-    title: "Séances",
-    sequences: animalSequences,
-    colors: ["#FF5722", "#E64A19"],
-  },
-  ecosystems: {
-    title: "Ecosystems",
-    sequences: [],
-    colors: ["#009688", "#00796B"],
+  sequence2: {
+    title: "Séquence 2",
+    seances: [],
+    colors: ["#9C27B0", "#7B1FA2"],
   },
 };
 
-export default function SequenceSelector({
-  course,
-  chapter,
-  onSelectSequence,
+export default function SeanceSelector({
+  chapitre,
+  sequence,
+  onSelectSeance,
   onBack,
-}: SequenceSelectorProps) {
-  const chapterInfo = chapterData[chapter];
-  const sequences = chapterInfo.sequences;
+}: SeanceSelectorProps) {
+  const sequenceInfo = sequenceData[sequence];
+  const seances = sequenceInfo.seances.length > 0 ? sequenceInfo.seances : [];
 
-  const renderIcon = (sequence: Sequence, size: number) => {
-    if (sequence.iconType === "Ionicons") {
-      return <Ionicons name={sequence.icon as any} size={size} color="#fff" />;
+  const renderIcon = (seance: Seance, size: number) => {
+    if (seance.iconType === "Ionicons") {
+      return <Ionicons name={seance.icon as any} size={size} color="#fff" />;
     } else {
       return (
         <MaterialCommunityIcons
-          name={sequence.icon as any}
+          name={seance.icon as any}
           size={size}
           color="#fff"
         />
@@ -138,98 +111,98 @@ export default function SequenceSelector({
 
       <View style={styles.header}>
         <LinearGradient
-          colors={chapterInfo.colors}
+          colors={sequenceInfo.colors}
           style={styles.headerGradient}
         >
           <TouchableOpacity style={styles.backButton} onPress={onBack}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{chapterInfo.title}</Text>
-          <Text style={styles.headerSubtitle}>
-            Selectionner une Séance
-          </Text>
+          <Text style={styles.headerTitle}>Séances</Text>
+          <Text style={styles.headerSubtitle}>Sélectionner une séance</Text>
         </LinearGradient>
       </View>
 
       <View style={styles.breadcrumbs}>
         <Text style={styles.breadcrumbText}>
-          <Text style={styles.breadcrumbCourse}>{course}</Text> /{" "}
-          <Text style={styles.breadcrumbChapter}>{chapterInfo.title}</Text>
+          <Text style={styles.breadcrumbChapitre}>
+            {chapitreData[chapitre]?.title || chapitre}
+          </Text>{" "}
+          / <Text style={styles.breadcrumbSequence}>{sequenceInfo.title}</Text>
         </Text>
       </View>
 
-      <View style={styles.sequencesContainer}>
-        {sequences.length > 0 ? (
-          sequences.map((sequence, index) => (
+      <View style={styles.seancesContainer}>
+        {seances.length > 0 ? (
+          seances.map((seance, index) => (
             <Animatable.View
-              key={sequence.id}
+              key={seance.id}
               animation="fadeInUp"
               delay={index * 100}
             >
               <TouchableOpacity
-                style={styles.sequenceCard}
-                onPress={() => onSelectSequence(sequence.id)}
-                disabled={sequence.activitiesCount === 0}
+                style={styles.seanceCard}
+                onPress={() => onSelectSeance(seance.id)}
+                disabled={seance.activitiesCount === 0}
               >
                 <LinearGradient
-                  colors={sequence.colors}
-                  style={styles.sequenceIconContainer}
+                  colors={seance.colors}
+                  style={styles.seanceIconContainer}
                 >
-                  {renderIcon(sequence, 30)}
+                  {renderIcon(seance, 30)}
                 </LinearGradient>
 
-                <View style={styles.sequenceContent}>
-                  <View style={styles.sequenceTitleRow}>
-                    <Text style={styles.sequenceTitle}>{sequence.title}</Text>
-                    {sequence.activitiesCount === 0 && (
+                <View style={styles.seanceContent}>
+                  <View style={styles.seanceTitleRow}>
+                    <Text style={styles.seanceTitle}>{seance.title}</Text>
+                    {seance.activitiesCount === 0 && (
                       <View style={styles.comingSoonBadge}>
-                        <Text style={styles.comingSoonText}>Coming Soon</Text>
+                        <Text style={styles.comingSoonText}>À venir</Text>
                       </View>
                     )}
                   </View>
 
-                  <Text style={styles.sequenceDescription} numberOfLines={2}>
-                    {sequence.description}
+                  <Text style={styles.seanceDescription} numberOfLines={2}>
+                    {seance.description}
                   </Text>
 
-                  <View style={styles.sequenceFooter}>
-                    <View style={styles.sequenceStats}>
+                  <View style={styles.seanceFooter}>
+                    <View style={styles.seanceStats}>
                       <MaterialCommunityIcons
                         name="notebook"
                         size={16}
                         color="#666"
                       />
-                      <Text style={styles.sequenceStatsText}>
-                        {sequence.activitiesCount}{" "}
-                        {sequence.activitiesCount === 1
-                          ? "Activity"
-                          : "Activities"}
+                      <Text style={styles.seanceStatsText}>
+                        {seance.activitiesCount}{" "}
+                        {seance.activitiesCount === 1
+                          ? "Activité"
+                          : "Activités"}
                       </Text>
                     </View>
 
-                    {sequence.activitiesCount > 0 && (
+                    {seance.activitiesCount > 0 && (
                       <View style={styles.progressContainer}>
                         <View style={styles.progressBar}>
                           <View
                             style={[
                               styles.progressFill,
                               {
-                                width: `${sequence.progress}%`,
-                                backgroundColor: sequence.colors[0],
+                                width: `${seance.progress}%`,
+                                backgroundColor: seance.colors[0],
                               },
                             ]}
                           />
                         </View>
                         <Text style={styles.progressText}>
-                          {sequence.progress}%
+                          {seance.progress}%
                         </Text>
                       </View>
                     )}
                   </View>
                 </View>
 
-                {sequence.activitiesCount > 0 && (
-                  <View style={styles.sequenceArrow}>
+                {seance.activitiesCount > 0 && (
+                  <View style={styles.seanceArrow}>
                     <Ionicons name="chevron-forward" size={20} color="#999" />
                   </View>
                 )}
@@ -243,11 +216,9 @@ export default function SequenceSelector({
               size={60}
               color="#ccc"
             />
-            <Text style={styles.emptyStateText}>
-              No sequences available yet
-            </Text>
+            <Text style={styles.emptyStateText}>Aucune séance disponible</Text>
             <Text style={styles.emptyStateSubtext}>
-              Check back soon for new content!
+              Revenez bientôt pour du nouveau contenu!
             </Text>
           </View>
         )}
@@ -255,6 +226,21 @@ export default function SequenceSelector({
     </ScrollView>
   );
 }
+
+const chapitreData = {
+  chapitre1: {
+    title: "Chapitre 1",
+    colors: ["#4CAF50", "#2E7D32"],
+  },
+  chapitre2: {
+    title: "Chapitre 2",
+    colors: ["#2196F3", "#1565C0"],
+  },
+  chapitre3: {
+    title: "Chapitre 3",
+    colors: ["#9C27B0", "#7B1FA2"],
+  },
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -300,19 +286,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
   },
-  breadcrumbCourse: {
-    fontWeight: "bold",
-    color: "#333",
-    textTransform: "capitalize",
-  },
-  breadcrumbChapter: {
+  breadcrumbChapitre: {
     fontWeight: "bold",
     color: "#333",
   },
-  sequencesContainer: {
+  breadcrumbSequence: {
+    fontWeight: "bold",
+    color: "#333",
+  },
+  seancesContainer: {
     padding: 15,
   },
-  sequenceCard: {
+  seanceCard: {
     backgroundColor: "white",
     borderRadius: 15,
     marginBottom: 15,
@@ -324,23 +309,23 @@ const styles = StyleSheet.create({
     elevation: 3,
     overflow: "hidden",
   },
-  sequenceIconContainer: {
+  seanceIconContainer: {
     width: 70,
     justifyContent: "center",
     alignItems: "center",
     padding: 15,
   },
-  sequenceContent: {
+  seanceContent: {
     flex: 1,
     padding: 15,
   },
-  sequenceTitleRow: {
+  seanceTitleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 5,
   },
-  sequenceTitle: {
+  seanceTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
@@ -357,21 +342,21 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
   },
-  sequenceDescription: {
+  seanceDescription: {
     fontSize: 14,
     color: "#666",
     marginBottom: 10,
   },
-  sequenceFooter: {
+  seanceFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  sequenceStats: {
+  seanceStats: {
     flexDirection: "row",
     alignItems: "center",
   },
-  sequenceStatsText: {
+  seanceStatsText: {
     marginLeft: 5,
     color: "#666",
     fontSize: 12,
@@ -396,7 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
   },
-  sequenceArrow: {
+  seanceArrow: {
     justifyContent: "center",
     paddingLeft: 10,
   },

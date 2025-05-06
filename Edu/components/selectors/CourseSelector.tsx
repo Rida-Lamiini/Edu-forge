@@ -6,69 +6,67 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
 
-type CourseType = "biology" | "physics" | "chemistry";
+type ChapitreType = "chapitre1" | "chapitre2" | "chapitre3";
 
 type CourseSelectorProps = {
-  onSelectCourse: (course: CourseType) => void;
+  onSelectChapitre: (chapitre: ChapitreType) => void;
 };
 
-type Course = {
-  id: CourseType;
+type Chapitre = {
+  id: ChapitreType;
   title: string;
   description: string;
   icon: string;
   iconType: "Ionicons" | "MaterialCommunityIcons";
   colors: string[];
-  chaptersCount: number;
+  sequencesCount: number;
 };
 
-const courses: Course[] = [
+const chapitres: Chapitre[] = [
   {
-    id: "biology",
+    id: "chapitre1",
     title: "Chapitre 1",
-    description:
-      "Les écosystèmes et leurs composantes.",
+    description: "Les écosystèmes et leurs composantes.",
     icon: "leaf",
     iconType: "Ionicons",
     colors: ["#4CAF50", "#2E7D32"],
-    chaptersCount: 2,
+    sequencesCount: 2,
   },
   {
-    id: "physics",
+    id: "chapitre2",
     title: "Chapitre 2",
-    description: "Les systèmes organiques selon l’environnement.",
+    description: "Les systèmes organiques selon l'environnement.",
     icon: "atom",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1565C0"],
-    chaptersCount: 2,
+    sequencesCount: 2,
   },
   {
-    id: "chemistry",
+    id: "chapitre3",
     title: "Chapitre 3",
     description: "La cellule, unité structurale et fonctionnelle du vivant.",
     icon: "flask",
     iconType: "MaterialCommunityIcons",
     colors: ["#9C27B0", "#7B1FA2"],
-    chaptersCount: 2,
+    sequencesCount: 2,
   },
 ];
 
 export default function CourseSelector({
-  onSelectCourse,
+  onSelectChapitre,
 }: CourseSelectorProps) {
-  const renderIcon = (course: Course, size: number) => {
-    if (course.iconType === "Ionicons") {
-      return <Ionicons name={course.icon as any} size={size} color="white" />;
+  const renderIcon = (chapitre: Chapitre, size: number) => {
+    if (chapitre.iconType === "Ionicons") {
+      return <Ionicons name={chapitre.icon as any} size={size} color="white" />;
     } else {
       return (
         <MaterialCommunityIcons
-          name={course.icon as any}
+          name={chapitre.icon as any}
           size={size}
           color="white"
         />
@@ -85,36 +83,34 @@ export default function CourseSelector({
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Science de la vie et de la terre</Text>
-        <Text style={styles.headerSubtitle}>
-          Livret de l'éléve
-        </Text>
+        <Text style={styles.headerSubtitle}>Livret de l'éléve</Text>
       </View>
 
       <View style={styles.coursesContainer}>
-        {courses.map((course, index) => (
+        {chapitres.map((chapitre, index) => (
           <Animatable.View
-            key={course.id}
+            key={chapitre.id}
             animation="fadeInUp"
             delay={index * 100}
             style={styles.courseCardWrapper}
           >
             <TouchableOpacity
               style={styles.courseCard}
-              onPress={() => onSelectCourse(course.id)}
+              onPress={() => onSelectChapitre(chapitre.id)}
             >
               <LinearGradient
-                colors={course.colors}
+                colors={chapitre.colors}
                 style={styles.courseHeader}
               >
                 <View style={styles.courseIconContainer}>
-                  {renderIcon(course, 40)}
+                  {renderIcon(chapitre, 40)}
                 </View>
-                <Text style={styles.courseTitle}>{course.title}</Text>
+                <Text style={styles.courseTitle}>{chapitre.title}</Text>
               </LinearGradient>
 
               <View style={styles.courseContent}>
                 <Text style={styles.courseDescription}>
-                  {course.description}
+                  {chapitre.description}
                 </Text>
 
                 <View style={styles.courseFooter}>
@@ -125,7 +121,7 @@ export default function CourseSelector({
                       color="#666"
                     />
                     <Text style={styles.courseStatsText}>
-                      {course.chaptersCount} Séquences
+                      {chapitre.sequencesCount} Séquences
                     </Text>
                   </View>
 
@@ -133,7 +129,7 @@ export default function CourseSelector({
                     <Text
                       style={[
                         styles.courseActionText,
-                        { color: course.colors[0] },
+                        { color: chapitre.colors[0] },
                       ]}
                     >
                       Commencer
@@ -141,7 +137,7 @@ export default function CourseSelector({
                     <Ionicons
                       name="chevron-forward"
                       size={16}
-                      color={course.colors[0]}
+                      color={chapitre.colors[0]}
                     />
                   </View>
                 </View>

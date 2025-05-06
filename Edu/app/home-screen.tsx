@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import CourseSelector from "../components/CourseSelector";
-import ChapterSelector from "../components/ChapterSelector";
-import SequenceSelector from "../components/SequenceSelector";
-import ActivitySelector from "../components/ActivitySelector";
+import CourseSelector from "../components/selectors/CourseSelector";
+import SequenceSelector from "../components/selectors/SequenceSelector";
+import SeanceSelector from "../components/selectors/SeanceSelector";
+import ActivitySelector from "../components/selectors/ActivitySelector";
 import PlantClassificationGame from "../components/PlantClassificationGame";
 import OakClassificationGame from "../components/OakClassificationGame";
 import BirdClassificationGame from "../components/BirdClassificationGame";
@@ -13,45 +13,38 @@ import ScientificMethodActivity from "../components/ScientificMethodActivity";
 import PondRespirationActivity from "../components/PondRespirationActivity";
 import PlantClassificationActivity from "../components/PlantClassificationActivity";
 
-type CourseType = "biology" | "physics" | "chemistry" | null;
-type ChapterType = "plants" | "animals" | "ecosystems" | null;
-type SequenceType =
-  | "classification"
-  | "anatomy"
-  | "lifecycle"
-  | "scientific_method"
-  | "respiration"
-  | null;
+type ChapitreType = "chapitre1" | "chapitre2" | "chapitre3" | null;
+type SequenceType = "sequence1" | "sequence2" | null;
+type SeanceType = "seance1" | "seance2" | "seance3" | null;
 type ActivityType =
-  | "plants"
-  | "oaks"
-  | "birds"
-  | "cricket_experiment"
-  | "pond_respiration"
-  | "plant_classification"
+  | "activity1"
+  | "activity2"
+  | "activity3"
+  | "activity4"
+  | "activity5"
   | null;
 
 export default function HomeScreen() {
-  const [selectedCourse, setSelectedCourse] = useState<CourseType>(null);
-  const [selectedChapter, setSelectedChapter] = useState<ChapterType>(null);
+  const [selectedChapitre, setSelectedChapitre] = useState<ChapitreType>(null);
   const [selectedSequence, setSelectedSequence] = useState<SequenceType>(null);
+  const [selectedSeance, setSelectedSeance] = useState<SeanceType>(null);
   const [selectedActivity, setSelectedActivity] = useState<ActivityType>(null);
 
-  const handleBackToCourses = () => {
-    setSelectedCourse(null);
-    setSelectedChapter(null);
+  const handleBackToChapitres = () => {
+    setSelectedChapitre(null);
     setSelectedSequence(null);
-    setSelectedActivity(null);
-  };
-
-  const handleBackToChapters = () => {
-    setSelectedChapter(null);
-    setSelectedSequence(null);
+    setSelectedSeance(null);
     setSelectedActivity(null);
   };
 
   const handleBackToSequences = () => {
     setSelectedSequence(null);
+    setSelectedSeance(null);
+    setSelectedActivity(null);
+  };
+
+  const handleBackToSeances = () => {
+    setSelectedSeance(null);
     setSelectedActivity(null);
   };
 
@@ -60,27 +53,27 @@ export default function HomeScreen() {
   };
 
   const renderContent = () => {
-    if (!selectedCourse) {
-      return <CourseSelector onSelectCourse={setSelectedCourse} />;
-    }
-
-    if (!selectedChapter) {
-      return (
-        <ChapterSelector
-          course={selectedCourse}
-          onSelectChapter={setSelectedChapter}
-          onBack={handleBackToCourses}
-        />
-      );
+    if (!selectedChapitre) {
+      return <CourseSelector onSelectChapitre={setSelectedChapitre} />;
     }
 
     if (!selectedSequence) {
       return (
         <SequenceSelector
-          course={selectedCourse}
-          chapter={selectedChapter}
+          chapitre={selectedChapitre}
           onSelectSequence={setSelectedSequence}
-          onBack={handleBackToChapters}
+          onBack={handleBackToChapitres}
+        />
+      );
+    }
+
+    if (!selectedSeance) {
+      return (
+        <SeanceSelector
+          chapitre={selectedChapitre}
+          sequence={selectedSequence}
+          onSelectSeance={setSelectedSeance}
+          onBack={handleBackToSequences}
         />
       );
     }
@@ -88,39 +81,29 @@ export default function HomeScreen() {
     if (!selectedActivity) {
       return (
         <ActivitySelector
-          course={selectedCourse}
-          chapter={selectedChapter}
+          chapitre={selectedChapitre}
           sequence={selectedSequence}
+          seance={selectedSeance}
           onSelectActivity={setSelectedActivity}
-          onBack={handleBackToSequences}
+          onBack={handleBackToSeances}
         />
       );
     }
 
-    // In the switch statement
+    // Render the appropriate activity component based on the selected activity
     switch (selectedActivity) {
-      case "plants":
+      case "activity1":
         return <PlantClassificationGame onBack={handleBackToActivities} />;
-      case "oaks":
+      case "activity2":
         return <OakClassificationGame onBack={handleBackToActivities} />;
-      case "birds":
+      case "activity3":
         return <BirdClassificationGame onBack={handleBackToActivities} />;
-      case "cricket_experiment":
-        return <ScientificMethodActivity onBack={handleBackToActivities} />;
-      case "pond_respiration":
+      case "activity4":
         return <PondRespirationActivity onBack={handleBackToActivities} />;
-      case "plant_classification":
-        return <PlantClassificationActivity onBack={handleBackToActivities} />;
+      case "activity5":
+        return <ScientificMethodActivity onBack={handleBackToActivities} />;
       default:
-        return (
-          <ActivitySelector
-            course={selectedCourse}
-            chapter={selectedChapter}
-            sequence={selectedSequence}
-            onSelectActivity={setSelectedActivity}
-            onBack={handleBackToSequences}
-          />
-        );
+        return <PlantClassificationActivity onBack={handleBackToActivities} />;
     }
   };
 
