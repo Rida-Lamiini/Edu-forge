@@ -33,6 +33,7 @@ type Seance = {
   progress: number;
 };
 
+// Update sequenceData to ensure each sequence has exactly 2 seances
 const sequence1Seances: Seance[] = [
   {
     id: "seance1",
@@ -51,21 +52,127 @@ const sequence1Seances: Seance[] = [
     icon: "earth",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1565C0"],
-    activitiesCount: 3,
+    activitiesCount: 2,
     progress: 0,
   },
+];
+
+const sequence2Seances: Seance[] = [
   {
-    id: "seance3",
-    title: "Séance 3",
-    description: "Classification des écosystèmes",
+    id: "seance1",
+    title: "Séance 1",
+    description: "Classification des plantes",
     icon: "tree",
     iconType: "MaterialCommunityIcons",
     colors: ["#FF9800", "#F57C00"],
     activitiesCount: 2,
     progress: 0,
   },
+  {
+    id: "seance2",
+    title: "Séance 2",
+    description: "Classification des animaux",
+    icon: "bird",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#9C27B0", "#7B1FA2"],
+    activitiesCount: 2,
+    progress: 0,
+  },
 ];
 
+const chapitre2Sequence1Seances: Seance[] = [
+  {
+    id: "seance1",
+    title: "Séance 1",
+    description: "Respiration des animaux aquatiques",
+    icon: "fish",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#2196F3", "#1976D2"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+  {
+    id: "seance2",
+    title: "Séance 2",
+    description: "Adaptations respiratoires aquatiques",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+];
+
+const chapitre2Sequence2Seances: Seance[] = [
+  {
+    id: "seance1",
+    title: "Séance 1",
+    description: "Respiration des animaux terrestres",
+    icon: "rabbit",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#FF5722", "#E64A19"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+  {
+    id: "seance2",
+    title: "Séance 2",
+    description: "Adaptations respiratoires terrestres",
+    icon: "lungs",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#795548", "#5D4037"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+];
+
+const chapitre3Sequence1Seances: Seance[] = [
+  {
+    id: "seance1",
+    title: "Séance 1",
+    description: "Structure cellulaire",
+    icon: "microscope",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#9C27B0", "#7B1FA2"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+  {
+    id: "seance2",
+    title: "Séance 2",
+    description: "Organites cellulaires",
+    icon: "atom",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#673AB7", "#512DA8"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+];
+
+const chapitre3Sequence2Seances: Seance[] = [
+  {
+    id: "seance1",
+    title: "Séance 1",
+    description: "Métabolisme cellulaire",
+    icon: "flask",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#E91E63", "#C2185B"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+  {
+    id: "seance2",
+    title: "Séance 2",
+    description: "Échanges cellulaires",
+    icon: "arrow-decision",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#FFC107", "#FFA000"],
+    activitiesCount: 2,
+    progress: 0,
+  },
+];
+
+// Update sequenceData with all sequences and their seances
 const sequenceData = {
   sequence1: {
     title: "Séquence 1",
@@ -74,10 +181,29 @@ const sequenceData = {
   },
   sequence2: {
     title: "Séquence 2",
-    seances: [],
+    seances: sequence2Seances,
     colors: ["#9C27B0", "#7B1FA2"],
   },
 };
+
+// Add a mapping for chapitre-sequence combinations to return the correct seances
+function getSeancesForChapitreSequence(
+  chapitre: ChapitreType,
+  sequence: SequenceType
+): Seance[] {
+  if (chapitre === "chapitre1") {
+    return sequence === "sequence1" ? sequence1Seances : sequence2Seances;
+  } else if (chapitre === "chapitre2") {
+    return sequence === "sequence1"
+      ? chapitre2Sequence1Seances
+      : chapitre2Sequence2Seances;
+  } else if (chapitre === "chapitre3") {
+    return sequence === "sequence1"
+      ? chapitre3Sequence1Seances
+      : chapitre3Sequence2Seances;
+  }
+  return [];
+}
 
 export default function SeanceSelector({
   chapitre,
@@ -86,7 +212,8 @@ export default function SeanceSelector({
   onBack,
 }: SeanceSelectorProps) {
   const sequenceInfo = sequenceData[sequence];
-  const seances = sequenceInfo.seances.length > 0 ? sequenceInfo.seances : [];
+  // Get the correct seances based on chapitre and sequence
+  const seances = getSeancesForChapitreSequence(chapitre, sequence);
 
   const renderIcon = (seance: Seance, size: number) => {
     if (seance.iconType === "Ionicons") {

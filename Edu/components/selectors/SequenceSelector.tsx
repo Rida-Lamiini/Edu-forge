@@ -30,6 +30,7 @@ type Sequence = {
   progress: number;
 };
 
+// Update chapitreData to ensure each chapitre has exactly 2 sequences
 const chapitre1Sequences: Sequence[] = [
   {
     id: "sequence1",
@@ -37,7 +38,7 @@ const chapitre1Sequences: Sequence[] = [
     description: "Diversité des écosystèmes et leur unité.",
     icon: "leaf",
     iconType: "Ionicons",
-    seancesCount: 3,
+    seancesCount: 2,
     progress: 0,
   },
   {
@@ -45,6 +46,48 @@ const chapitre1Sequences: Sequence[] = [
     title: "Séquence 2",
     description: "Classification des êtres vivants.",
     icon: "paw",
+    iconType: "MaterialCommunityIcons",
+    seancesCount: 2,
+    progress: 0,
+  },
+];
+
+const chapitre2Sequences: Sequence[] = [
+  {
+    id: "sequence1",
+    title: "Séquence 1",
+    description: "Les systèmes respiratoires en milieu aquatique.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    seancesCount: 2,
+    progress: 0,
+  },
+  {
+    id: "sequence2",
+    title: "Séquence 2",
+    description: "Les systèmes respiratoires en milieu terrestre.",
+    icon: "wind",
+    iconType: "Ionicons",
+    seancesCount: 2,
+    progress: 0,
+  },
+];
+
+const chapitre3Sequences: Sequence[] = [
+  {
+    id: "sequence1",
+    title: "Séquence 1",
+    description: "Structure et organisation cellulaire.",
+    icon: "flask",
+    iconType: "MaterialCommunityIcons",
+    seancesCount: 2,
+    progress: 0,
+  },
+  {
+    id: "sequence2",
+    title: "Séquence 2",
+    description: "Fonctions cellulaires et métabolisme.",
+    icon: "atom",
     iconType: "MaterialCommunityIcons",
     seancesCount: 2,
     progress: 0,
@@ -59,12 +102,12 @@ const chapitreData = {
   },
   chapitre2: {
     title: "Chapitre 2",
-    sequences: [],
+    sequences: chapitre2Sequences,
     colors: ["#2196F3", "#1565C0"],
   },
   chapitre3: {
     title: "Chapitre 3",
-    sequences: [],
+    sequences: chapitre3Sequences,
     colors: ["#9C27B0", "#7B1FA2"],
   },
 };

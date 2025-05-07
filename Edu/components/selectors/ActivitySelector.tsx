@@ -40,11 +40,12 @@ type Activity = {
   completed: boolean;
 };
 
+// Update activity data to ensure each seance has a set of activities
 const seance1Activities: Activity[] = [
   {
     id: "activity1",
     title: "Activité 1",
-    description: "Composantes des écosystèmes.",
+    description: "Étude des composantes des écosystèmes.",
     icon: "leaf",
     iconType: "MaterialCommunityIcons",
     colors: ["#4CAF50", "#2E7D32"],
@@ -54,7 +55,7 @@ const seance1Activities: Activity[] = [
   {
     id: "activity2",
     title: "Activité 2",
-    description: "Unité des écosystèmes.",
+    description: "Classification des écosystèmes.",
     icon: "tree",
     iconType: "MaterialCommunityIcons",
     colors: ["#FF9800", "#F57C00"],
@@ -67,7 +68,53 @@ const seance2Activities: Activity[] = [
   {
     id: "activity3",
     title: "Activité 1",
-    description: "Classification des écosystèmes.",
+    description: "Interactions entre écosystèmes.",
+    icon: "earth",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#2196F3", "#1976D2"],
+    activityNumber: 1,
+    completed: false,
+  },
+  {
+    id: "activity4",
+    title: "Activité 2",
+    description: "Facteurs d'unité entre écosystèmes.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#26A69A", "#00796B"],
+    activityNumber: 2,
+    completed: false,
+  },
+];
+
+const sequence2Seance1Activities: Activity[] = [
+  {
+    id: "activity1",
+    title: "Activité 1",
+    description: "Classification des végétaux.",
+    icon: "leaf",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#4CAF50", "#2E7D32"],
+    activityNumber: 1,
+    completed: false,
+  },
+  {
+    id: "activity2",
+    title: "Activité 2",
+    description: "Classification des angiospermes.",
+    icon: "flower",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#FF9800", "#F57C00"],
+    activityNumber: 2,
+    completed: false,
+  },
+];
+
+const sequence2Seance2Activities: Activity[] = [
+  {
+    id: "activity3",
+    title: "Activité 1",
+    description: "Classification des oiseaux.",
     icon: "bird",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1976D2"],
@@ -77,39 +124,79 @@ const seance2Activities: Activity[] = [
   {
     id: "activity4",
     title: "Activité 2",
-    description: "Diversité des écosystèmes.",
-    icon: "water",
+    description: "Classification des mammifères.",
+    icon: "dog",
     iconType: "MaterialCommunityIcons",
     colors: ["#26A69A", "#00796B"],
     activityNumber: 2,
     completed: false,
   },
+];
+
+// Add more activities for other chapitre-sequence-seance combinations
+const chapitre2Sequence1Seance1Activities: Activity[] = [
   {
-    id: "activity5",
-    title: "Activité 3",
-    description: "Interactions dans les écosystèmes.",
-    icon: "flask",
+    id: "activity1",
+    title: "Activité 1",
+    description: "Branchies et respiration aquatique.",
+    icon: "fish",
     iconType: "MaterialCommunityIcons",
-    colors: ["#9C27B0", "#7B1FA2"],
-    activityNumber: 3,
+    colors: ["#2196F3", "#1976D2"],
+    activityNumber: 1,
+    completed: false,
+  },
+  {
+    id: "activity2",
+    title: "Activité 2",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
     completed: false,
   },
 ];
 
+// Create a function to get the correct activities based on chapitre, sequence, and seance
+function getActivitiesForSeance(
+  chapitre: ChapitreType,
+  sequence: SequenceType,
+  seance: SeanceType
+): Activity[] {
+  if (chapitre === "chapitre1") {
+    if (sequence === "sequence1") {
+      return seance === "seance1" ? seance1Activities : seance2Activities;
+    } else if (sequence === "sequence2") {
+      return seance === "seance1"
+        ? sequence2Seance1Activities
+        : sequence2Seance2Activities;
+    }
+  } else if (chapitre === "chapitre2") {
+    if (sequence === "sequence1") {
+      if (seance === "seance1") {
+        return chapitre2Sequence1Seance1Activities;
+      } else {
+        // Return activities for chapitre2, sequence1, seance2
+        return chapitre2Sequence1Seance1Activities; // Change this to the correct set when available
+      }
+    }
+  }
+  // Default to an empty array if no matching activities
+  return [];
+}
+
+// Update seanceData to make it simpler
 const seanceData = {
   seance1: {
     title: "Séance 1",
-    activities: seance1Activities,
     colors: ["#4CAF50", "#2E7D32"],
   },
   seance2: {
     title: "Séance 2",
-    activities: seance2Activities,
     colors: ["#2196F3", "#1565C0"],
   },
   seance3: {
     title: "Séance 3",
-    activities: [],
     colors: ["#FF9800", "#F57C00"],
   },
 };
@@ -122,7 +209,7 @@ export default function ActivitySelector({
   onBack,
 }: ActivitySelectorProps) {
   const seanceInfo = seanceData[seance];
-  const activities = seanceInfo.activities;
+  const activities = getActivitiesForSeance(chapitre, sequence, seance);
 
   const renderIcon = (activity: Activity, size: number) => {
     if (activity.iconType === "Ionicons") {
