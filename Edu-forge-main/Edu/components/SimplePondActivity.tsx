@@ -7,7 +7,7 @@ type SimplePondActivityProps = {
   onBack: () => void;
 };
 
-export default function A10({
+export default function SimplePondActivity({
   onBack,
 }: SimplePondActivityProps) {
   return (

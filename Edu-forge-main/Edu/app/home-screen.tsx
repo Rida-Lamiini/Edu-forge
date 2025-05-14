@@ -6,18 +6,11 @@ import CourseSelector from "../components/CourseSelector";
 import ChapterSelector from "../components/ChapterSelector";
 import SequenceSelector from "../components/SequenceSelector";
 import ActivitySelector from "../components/ActivitySelector";
-import A1 from "../components/A1";
-import A2 from "../components/A2";
-import A3 from "../components/A3";
-import A4 from "../components/A4";
-import A5 from "../components/A5";
-import A6 from "../components/A6";
-import A7 from "../components/A7";
-import A8 from "../components/A8";
-import A9 from "../components/A9";
-import A10 from "../components/A10";
-import A11 from "../components/A11";
-import A12 from "../components/A12";
+import PlantClassificationGame from "../components/PlantClassificationGame";
+import OakClassificationGame from "../components/OakClassificationGame";
+import BirdClassificationGame from "../components/BirdClassificationGame";
+import ScientificMethodActivity from "../components/ScientificMethodActivity";
+import PondRespirationActivity from "../components/PondRespirationActivity";
 
 type CourseType = "biology" | "physics" | "chemistry" | null;
 type ChapterType = "plants" | "animals" | "ecosystems" | null;
@@ -29,18 +22,12 @@ type SequenceType =
   | "respiration"
   | null;
 type ActivityType =
-  | "A1"
-  | "A2"
-  | "A3"
-  | "A4"
-  | "A5"
-  | "A6"
-  | "A7"
-  | "A8"
-  | "A9"
-  | "A10"
-  | "A11"
-  | "A12";
+  | "plants"
+  | "oaks"
+  | "birds"
+  | "cricket_experiment"
+  | "pond_respiration"
+  | null;
 
 export default function HomeScreen() {
   const [selectedCourse, setSelectedCourse] = useState<CourseType>(null);
@@ -109,30 +96,16 @@ export default function HomeScreen() {
     }
 
     switch (selectedActivity) {
-      case "A1":
-        return <A1 onBack={handleBackToActivities} />;
-      case "A2":
-        return <A2 onBack={handleBackToActivities} />;
-      case "A3":
-        return <A3 onBack={handleBackToActivities} />;
-      case "A4":
-        return <A4 onBack={handleBackToActivities} />;
-      case "A5":
-        return <A5 onBack={handleBackToActivities} />;
-      case "A6":
-        return <A6 onBack={handleBackToActivities} />;
-      case "A7":
-        return <A7 onBack={handleBackToActivities} />;
-      case "A8":
-        return <A8 onBack={handleBackToActivities} />;
-      case "A9":
-        return <A9 onBack={handleBackToActivities} />;
-      case "A10":
-        return <A10 onBack={handleBackToActivities} />;
-      case "A11":
-        return <A11 onBack={handleBackToActivities} />;
-      case "A12":
-        return <A12 onBack={handleBackToActivities} />;
+      case "plants":
+        return <PlantClassificationGame onBack={handleBackToActivities} />;
+      case "oaks":
+        return <OakClassificationGame onBack={handleBackToActivities} />;
+      case "birds":
+        return <BirdClassificationGame onBack={handleBackToActivities} />;
+      case "cricket_experiment":
+        return <ScientificMethodActivity onBack={handleBackToActivities} />;
+      case "pond_respiration":
+        return <PondRespirationActivity onBack={handleBackToActivities} />;
       default:
         return (
           <ActivitySelector

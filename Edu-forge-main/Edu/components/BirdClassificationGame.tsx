@@ -16,7 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
 import { Audio } from "expo-av";
-import BirdDecisionTree from "./A4";
+import BirdDecisionTree from "./BirdDecisionTree";
 
 type BirdType =
   | "mesange_bleue"
@@ -35,7 +35,7 @@ type BirdClassificationGameProps = {
   onBack: () => void;
 };
 
-export default function A3({
+export default function BirdClassificationGame({
   onBack,
 }: BirdClassificationGameProps) {
   const { width, height } = useWindowDimensions();

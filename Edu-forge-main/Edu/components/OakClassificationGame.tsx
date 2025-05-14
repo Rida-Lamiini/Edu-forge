@@ -11,152 +11,88 @@ import {
   ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { Ionicons } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
 import { Audio } from "expo-av";
+import OakDecisionTree from "./OakDecisionTree";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
-type Language = "en" | "fr";
-
-type Plant = {
+type Oak = {
   id: number;
-  name: {
-    en: string;
-    fr: string;
-  };
+  name: string;
+  frenchName: string;
   iconName: string;
   iconType: "Ionicons" | "MaterialCommunityIcons";
   iconColor: string;
-  type: "angiosperm" | "gymnosperm" | "pteridophyte" | "algae";
-  description: {
-    en: string;
-    fr: string;
-  };
+  type: "pedunculate" | "sessile" | "holm";
+  description: string;
+  leafType: string;
+  acornType: string;
 };
 
-type PlantClassificationGameProps = {
+type OakClassificationGameProps = {
   onBack: () => void;
 };
 
-const plants: Plant[] = [
+const oaks: Oak[] = [
   {
     id: 1,
-    name: {
-      en: "Green Beans",
-      fr: "Haricots Verts",
-    },
-    iconName: "seed",
+    name: "Pedunculate Oak",
+    frenchName: "Chêne pédonculé",
+    iconName: "tree",
     iconType: "MaterialCommunityIcons",
-    iconColor: "#4CAF50",
-    type: "angiosperm",
-    description: {
-      en: "Green beans have seeds inside their pods. They are flowering plants!",
-      fr: "Les haricots verts ont des graines à l'intérieur de leurs gousses. Ce sont des plantes à fleurs !",
-    },
+    iconColor: "#8D6E63",
+    type: "pedunculate",
+    description:
+      "The pedunculate oak has lobed leaves and acorns with long stalks.",
+    leafType: "Feuille à bord lobé",
+    acornType: "Gland porté par un pédoncule long",
   },
   {
     id: 2,
-    name: {
-      en: "Pine Tree",
-      fr: "Pin",
-    },
+    name: "Sessile Oak",
+    frenchName: "Chêne sessile",
     iconName: "pine-tree",
     iconType: "MaterialCommunityIcons",
-    iconColor: "#2E7D32",
-    type: "gymnosperm",
-    description: {
-      en: "Pine trees have seeds on their cones, not inside fruits.",
-      fr: "Les pins ont des graines sur leurs cônes, pas à l'intérieur des fruits.",
-    },
+    iconColor: "#795548",
+    type: "sessile",
+    description:
+      "The sessile oak has lobed leaves and acorns with short or no stalks.",
+    leafType: "Feuille à bord lobé",
+    acornType: "Gland porté par un pédoncule court",
   },
   {
     id: 3,
-    name: {
-      en: "Fern",
-      fr: "Fougère",
-    },
-    iconName: "grass",
+    name: "Holm Oak",
+    frenchName: "Chêne vert",
+    iconName: "nature",
     iconType: "MaterialCommunityIcons",
-    iconColor: "#8BC34A",
-    type: "pteridophyte",
-    description: {
-      en: "Ferns have stems and leaves but no seeds. They reproduce with spores!",
-      fr: "Les fougères ont des tiges et des feuilles mais pas de graines. Elles se reproduisent avec des spores !",
-    },
-  },
-  {
-    id: 4,
-    name: {
-      en: "Seaweed",
-      fr: "Algue Marine",
-    },
-    iconName: "waves",
-    iconType: "MaterialCommunityIcons",
-    iconColor: "#00BCD4",
-    type: "algae",
-    description: {
-      en: "Seaweed has no stems or leaves. It lives in water!",
-      fr: "Les algues marines n'ont ni tiges ni feuilles. Elles vivent dans l'eau !",
-    },
+    iconColor: "#5D4037",
+    type: "holm",
+    description: "The holm oak has smooth-edged leaves that are often spiny.",
+    leafType: "Feuille à bord lisse",
+    acornType: "",
   },
 ];
 
-export default function A7({
+export default function OakClassificationGame({
   onBack,
-}: PlantClassificationGameProps) {
-  const [language, setLanguage] = useState<Language>("fr");
-  const [currentPlant, setCurrentPlant] = useState<Plant>(plants[0]);
+}: OakClassificationGameProps) {
+  const [currentOak, setCurrentOak] = useState<Oak>(oaks[0]);
   const [showDecisionTree, setShowDecisionTree] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [showTryAgain, setShowTryAgain] = useState(false);
 
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
-  const translations = {
-    en: {
-      level: "Level",
-      score: "Score",
-      activityTitle: "What type of plant is this?",
-      showDecisionTree: "Show Decision Tree",
-      hideDecisionTree: "Hide Decision Tree",
-      questionText: "This plant is a:",
-      tryAgain: "Try again! Use the decision tree to help you.",
-      options: {
-        algae: "Algae",
-        gymnosperm: "Gymnosperm",
-        angiosperm: "Angiosperm",
-        pteridophyte: "Pteridophyte",
-      },
-    },
-    fr: {
-      level: "Niveau",
-      score: "Score",
-      activityTitle: "Quel type de plante est-ce ?",
-      showDecisionTree: "Afficher la clé de détermination",
-      hideDecisionTree: "Masquer la clé de détermination",
-      questionText: "Cette plante est une :",
-      tryAgain:
-        "Essayez encore ! Utilisez la clé de détermination pour vous aider.",
-      options: {
-        algae: "Algue",
-        gymnosperm: "Gymnosperme",
-        angiosperm: "Angiosperme",
-        pteridophyte: "Ptéridophyte",
-      },
-    },
-  };
-
-  const t = translations[language];
-
   useEffect(() => {
-    // Animate the plant card when it appears
+    // Animate the oak card when it appears
     Animated.parallel([
       Animated.timing(scaleAnim, {
         toValue: 1,
@@ -170,11 +106,10 @@ export default function A7({
       }),
     ]).start();
 
-    // Reset state for new plant
+    // Reset state for new oak
     setSelectedAnswer(null);
     setIsCorrect(null);
-    setShowTryAgain(false);
-  }, [currentPlant, language]);
+  }, [currentOak]);
 
   async function playSound(isCorrect: boolean) {
     const soundFile = isCorrect
@@ -200,7 +135,7 @@ export default function A7({
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
-    const correct = answer === currentPlant.type;
+    const correct = answer === currentOak.type;
     setIsCorrect(correct);
 
     // Play sound effect
@@ -208,48 +143,34 @@ export default function A7({
 
     if (correct) {
       setScore(score + 10);
-      // Move to next plant after a short delay
+      // Move to next oak after a short delay
       setTimeout(() => {
         const nextIndex =
-          (plants.findIndex((p) => p.id === currentPlant.id) + 1) %
-          plants.length;
+          (oaks.findIndex((p) => p.id === currentOak.id) + 1) % oaks.length;
         if (nextIndex === 0) {
           setLevel(level + 1);
         }
-        setCurrentPlant(plants[nextIndex]);
+        setCurrentOak(oaks[nextIndex]);
         setShowDecisionTree(false);
       }, 1500);
-    } else {
-      setShowTryAgain(true);
     }
   };
 
-  const handleTryAgain = () => {
-    setSelectedAnswer(null);
-    setIsCorrect(null);
-    setShowTryAgain(false);
-    setShowDecisionTree(true);
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(language === "en" ? "fr" : "en");
-  };
-
-  const renderIcon = (plant: Plant, size: number) => {
-    if (plant.iconType === "Ionicons") {
+  const renderIcon = (oak: Oak, size: number) => {
+    if (oak.iconType === "Ionicons") {
       return (
         <Ionicons
-          name={plant.iconName as any}
+          name={oak.iconName as any}
           size={size}
-          color={plant.iconColor}
+          color={oak.iconColor}
         />
       );
     } else {
       return (
         <MaterialCommunityIcons
-          name={plant.iconName as any}
+          name={oak.iconName as any}
           size={size}
-          color={plant.iconColor}
+          color={oak.iconColor}
         />
       );
     }
@@ -261,22 +182,13 @@ export default function A7({
       contentContainerStyle={styles.contentContainer}
     >
       <LinearGradient
-        colors={["#f5f9fc", "#e0f7fa"]}
+        colors={["#FFF8E1", "#FFECB3"]}
         style={styles.background}
       />
 
-      <View style={styles.header}>
+      <View style={styles.scoreContainer}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#4CAF50" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={toggleLanguage}
-          style={styles.languageButton}
-        >
-          <Text style={styles.languageButtonText}>
-            {language === "en" ? "FR" : "EN"}
-          </Text>
+          <Ionicons name="arrow-back" size={24} color="#FF9800" />
         </TouchableOpacity>
 
         <Animatable.View
@@ -286,40 +198,38 @@ export default function A7({
           duration={2000}
         >
           <LinearGradient
-            colors={["#4CAF50", "#2E7D32"]}
+            colors={["#FF9800", "#F57C00"]}
             style={styles.levelBadge}
           >
-            <Text style={styles.levelText}>
-              {t.level} {level}
-            </Text>
+            <Text style={styles.levelText}>Level {level}</Text>
           </LinearGradient>
         </Animatable.View>
 
         <Animatable.View animation="bounceIn">
           <LinearGradient
-            colors={["#FF5252", "#D32F2F"]}
+            colors={["#4CAF50", "#388E3C"]}
             style={styles.scoreBadge}
           >
-            <Text style={styles.scoreText}>
-              {t.score}: {score}
-            </Text>
+            <Text style={styles.scoreText}>Score: {score}</Text>
           </LinearGradient>
         </Animatable.View>
       </View>
 
       <View style={styles.activityHeader}>
         <LinearGradient
-          colors={["#FF5252", "#FF7B7B"]}
+          colors={["#FF9800", "#F57C00"]}
           style={styles.activityBadge}
         >
-          <Text style={styles.activityNumber}>1</Text>
+          <Text style={styles.activityNumber}>3</Text>
         </LinearGradient>
-        <Text style={styles.activityTitle}>{t.activityTitle}</Text>
+        <Text style={styles.activityTitle}>
+          Classification des trois chênes
+        </Text>
       </View>
 
       <Animated.View
         style={[
-          styles.plantCard,
+          styles.oakCard,
           {
             transform: [{ scale: scaleAnim }],
             opacity: opacityAnim,
@@ -336,10 +246,11 @@ export default function A7({
             iterationCount="infinite"
             duration={3000}
           >
-            {renderIcon(currentPlant, width * 0.25)}
+            {renderIcon(currentOak, width * 0.25)}
           </Animatable.View>
         </LinearGradient>
-        <Text style={styles.plantName}>{currentPlant.name[language]}</Text>
+        <Text style={styles.oakName}>{currentOak.name}</Text>
+        <Text style={styles.oakFrenchName}>{currentOak.frenchName}</Text>
       </Animated.View>
 
       <Animatable.View animation="fadeIn" delay={300}>
@@ -349,7 +260,7 @@ export default function A7({
         >
           <LinearGradient
             colors={
-              showDecisionTree ? ["#FF5252", "#D32F2F"] : ["#4CAF50", "#2E7D32"]
+              showDecisionTree ? ["#FF5252", "#D32F2F"] : ["#FF9800", "#F57C00"]
             }
             style={styles.helpButtonGradient}
           >
@@ -359,7 +270,9 @@ export default function A7({
               color="white"
             />
             <Text style={styles.helpButtonText}>
-              {showDecisionTree ? t.hideDecisionTree : t.showDecisionTree}
+              {showDecisionTree
+                ? "Masquer la clé de détermination"
+                : "Afficher la clé de détermination"}
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -370,7 +283,7 @@ export default function A7({
           animation="fadeIn"
           style={styles.decisionTreeContainer}
         >
-          <PlantDecisionTree onSelect={handleAnswer} language={language} />
+          <OakDecisionTree onSelect={handleAnswer} />
         </Animatable.View>
       )}
 
@@ -379,22 +292,13 @@ export default function A7({
         delay={500}
         style={styles.answerContainer}
       >
-        <Text style={styles.questionText}>{t.questionText}</Text>
+        <Text style={styles.questionText}>Ce chêne est un:</Text>
 
         <View style={styles.optionsGrid}>
           {[
-            { label: t.options.algae, value: "algae", icon: "waves" },
-            {
-              label: t.options.gymnosperm,
-              value: "gymnosperm",
-              icon: "pine-tree",
-            },
-            { label: t.options.angiosperm, value: "angiosperm", icon: "seed" },
-            {
-              label: t.options.pteridophyte,
-              value: "pteridophyte",
-              icon: "grass",
-            },
+            { label: "Chêne pédonculé", value: "pedunculate" },
+            { label: "Chêne sessile", value: "sessile" },
+            { label: "Chêne vert", value: "holm" },
           ].map((option) => (
             <TouchableOpacity
               key={option.value}
@@ -406,12 +310,6 @@ export default function A7({
               onPress={() => handleAnswer(option.value)}
               disabled={selectedAnswer !== null}
             >
-              <MaterialCommunityIcons
-                name={option.icon as any}
-                size={24}
-                color={selectedAnswer === option.value ? "white" : "#555"}
-                style={styles.optionIcon}
-              />
               <Text
                 style={[
                   styles.optionText,
@@ -443,24 +341,12 @@ export default function A7({
           ))}
         </View>
 
-        {isCorrect === false && showTryAgain && (
-          <Animatable.View animation="fadeIn" style={styles.feedbackContainer}>
+        {isCorrect === false && (
+          <Animatable.View animation="shake" style={styles.feedbackContainer}>
             <Ionicons name="information-circle" size={24} color="#FF5252" />
-            <Text style={styles.feedbackText}>{t.tryAgain}</Text>
-            <TouchableOpacity
-              style={styles.tryAgainButton}
-              onPress={handleTryAgain}
-            >
-              <LinearGradient
-                colors={["#FF9800", "#F57C00"]}
-                style={styles.tryAgainButtonGradient}
-              >
-                <Text style={styles.tryAgainButtonText}>
-                  {language === "en" ? "Try Again" : "Réessayer"}
-                </Text>
-                <Ionicons name="refresh-cw" size={20} color="white" />
-              </LinearGradient>
-            </TouchableOpacity>
+            <Text style={styles.feedbackText}>
+              Essayez encore ! Utilisez la clé de détermination pour vous aider.
+            </Text>
           </Animatable.View>
         )}
 
@@ -470,9 +356,7 @@ export default function A7({
             style={styles.feedbackContainer}
           >
             <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
-            <Text style={styles.feedbackText}>
-              {currentPlant.description[language]}
-            </Text>
+            <Text style={styles.feedbackText}>{currentOak.description}</Text>
           </Animatable.View>
         )}
       </Animatable.View>
@@ -494,7 +378,7 @@ const styles = StyleSheet.create({
     top: 0,
     height: "100%",
   },
-  header: {
+  scoreContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -510,21 +394,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },
-  languageButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  languageButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#4CAF50",
   },
   levelBadge: {
     paddingHorizontal: 15,
@@ -570,7 +439,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: "#333",
   },
-  plantCard: {
+  oakCard: {
     backgroundColor: "white",
     borderRadius: 20,
     padding: 20,
@@ -595,10 +464,17 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  plantName: {
+  oakName: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#333",
+    textAlign: "center",
+  },
+  oakFrenchName: {
+    fontSize: 18,
+    fontStyle: "italic",
+    color: "#666",
+    marginTop: 5,
   },
   helpButton: {
     alignSelf: "center",
@@ -647,12 +523,10 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   optionsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: "column",
     justifyContent: "space-between",
   },
   optionButton: {
-    width: "48%",
     backgroundColor: "#f0f0f0",
     borderRadius: 15,
     padding: 15,
@@ -665,9 +539,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },
-  optionIcon: {
-    marginRight: 8,
   },
   correctOption: {
     backgroundColor: "#4CAF50",
@@ -709,21 +580,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#333",
     flex: 1,
-  },
-  tryAgainButton: {
-    borderRadius: 20,
-    overflow: "hidden",
-    marginLeft: 10,
-  },
-  tryAgainButtonGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  tryAgainButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    marginRight: 5,
   },
 });

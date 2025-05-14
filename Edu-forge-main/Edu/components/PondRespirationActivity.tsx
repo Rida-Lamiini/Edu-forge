@@ -50,7 +50,7 @@ type PondRespirationActivityProps = {
   onBack: () => void;
 };
 
-export default function A8({
+export default function PondRespirationActivity({
   onBack,
 }: PondRespirationActivityProps) {
   const { width, height } = useWindowDimensions();

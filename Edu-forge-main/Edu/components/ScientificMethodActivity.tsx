@@ -28,7 +28,7 @@ type Step = {
   isCorrect: boolean;
 };
 
-export default function A9({
+export default function ScientificMethodActivity({
   onBack,
 }: ScientificMethodActivityProps) {
   const [steps, setSteps] = useState<Step[]>([

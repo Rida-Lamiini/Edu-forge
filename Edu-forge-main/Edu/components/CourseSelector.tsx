@@ -31,9 +31,9 @@ type Course = {
 const courses: Course[] = [
   {
     id: "biology",
-    title: "SVT",
+    title: "Biology",
     description:
-      "Explorez le monde fascinant des êtres vivants et des systèmes naturels.",
+      "Explore the fascinating world of living organisms and natural systems",
     icon: "leaf",
     iconType: "Ionicons",
     colors: ["#4CAF50", "#2E7D32"],
@@ -41,8 +41,8 @@ const courses: Course[] = [
   },
   {
     id: "physics",
-    title: "PHYSIQUE",
-    description: "Découvrez les lois fondamentales qui régissent l’univers.",
+    title: "Physics",
+    description: "Discover the fundamental laws that govern the universe",
     icon: "atom",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1565C0"],
@@ -50,8 +50,8 @@ const courses: Course[] = [
   },
   {
     id: "chemistry",
-    title: "CHIMIE",
-    description: "Apprenez à connaître les éléments, les composés et les réactions chimiques.",
+    title: "Chemistry",
+    description: "Learn about elements, compounds, and chemical reactions",
     icon: "flask",
     iconType: "MaterialCommunityIcons",
     colors: ["#9C27B0", "#7B1FA2"],
@@ -84,9 +84,9 @@ export default function CourseSelector({
       />
 
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Explorateur des sciences</Text>
+        <Text style={styles.headerTitle}>Science Explorer</Text>
         <Text style={styles.headerSubtitle}>
-        Choisissez un cours pour commencer votre parcours d’apprentissage.
+          Choose a course to begin your learning journey
         </Text>
       </View>
 
@@ -125,7 +125,7 @@ export default function CourseSelector({
                       color="#666"
                     />
                     <Text style={styles.courseStatsText}>
-                      {course.chaptersCount} Chapitres
+                      {course.chaptersCount} Chapters
                     </Text>
                   </View>
 
@@ -136,7 +136,7 @@ export default function CourseSelector({
                         { color: course.colors[0] },
                       ]}
                     >
-                      Commencer
+                      Start Learning
                     </Text>
                     <Ionicons
                       name="chevron-forward"

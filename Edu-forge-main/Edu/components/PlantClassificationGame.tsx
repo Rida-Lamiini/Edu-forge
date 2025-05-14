@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-
+import PlantDecisionTree from "./PlantDecisionTree";
 import * as Animatable from "react-native-animatable";
 import { Audio } from "expo-av";
 
@@ -103,7 +103,7 @@ const plants: Plant[] = [
   },
 ];
 
-export default function A1({
+export default function PlantClassificationGame({
   onBack,
 }: PlantClassificationGameProps) {
   const [language, setLanguage] = useState<Language>("fr");

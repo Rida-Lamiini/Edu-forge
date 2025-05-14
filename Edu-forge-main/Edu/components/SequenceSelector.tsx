@@ -18,9 +18,7 @@ type SequenceType =
   | "anatomy"
   | "lifecycle"
   | "scientific_method"
-  | "respiration"
-  "respiration1"
-   "cellule_method";
+  | "respiration";
 
 type SequenceSelectorProps = {
   course: CourseType;
@@ -43,71 +41,57 @@ type Sequence = {
 const plantSequences: Sequence[] = [
   {
     id: "classification",
-    title: "Diversité des écosystèmes et leur unité.",
+    title: "Classification",
     description:
-      "Apprenez à identifier et à classer les différents types de plantes et d'arbres présents dans divers écosystèmes,",
+      "Learn to identify and classify different types of plants and trees",
     icon: "leaf",
     iconType: "Ionicons",
-    activitiesCount: 2,
+    activitiesCount: 3,
     progress: 0,
     colors: ["#4CAF50", "#2E7D32"],
   },
   {
     id: "anatomy",
-    title: "Classification des êtres vivants.",
-    description: "Explorez la structure et les différentes parties des plantes",
+    title: "Plant Anatomy",
+    description: "Explore the structure and parts of plants",
     icon: "sprout",
     iconType: "MaterialCommunityIcons",
-    activitiesCount: 2,
+    activitiesCount: 0,
     progress: 0,
     colors: ["#FF9800", "#F57C00"],
+  },
+  {
+    id: "lifecycle",
+    title: "Plant Lifecycle",
+    description: "Understand how plants grow, reproduce, and develop",
+    icon: "flower",
+    iconType: "MaterialCommunityIcons",
+    activitiesCount: 0,
+    progress: 0,
+    colors: ["#9C27B0", "#7B1FA2"],
   },
 ];
 
 const animalSequences: Sequence[] = [
   {
     id: "scientific_method",
-    title: "Appareil respiratoire selon l’environnement.",
+    title: "Méthode Scientifique",
     description:
-      "Apprenez comment l'appareil respiratoire s'adapte aux différents environnements",
+      "Apprendre les étapes de la démarche expérimentale à travers des exemples concrets",
     icon: "flask",
     iconType: "MaterialCommunityIcons",
-    activitiesCount: 2,
-    progress: 0,
-    colors: ["#FF9800", "#F57C00"],
-  },
-  {
-    id: "respiration1",
-    title: "Appareil digestif selon l’environnement.",
-    description:
-      "Explorez comment l'appareil digestif des animaux s'adapte aux conditions de leur environnement",
-    icon: "lungs",
-    iconType: "MaterialCommunityIcons",
-    activitiesCount: 2,
-    progress: 0,
-    colors: ["#26A69A", "#00796B"],
-  },
-];
-const celluleSequences: Sequence[] = [
-  {
-    id: "cellule_method",
-    title: "Diversité des cellules.",
-    description:
-      "Découvrez les différents types de cellules et leurs rôles essentiels dans le corps humain.",
-    icon: "flask",
-    iconType: "MaterialCommunityIcons",
-    activitiesCount: 2,
+    activitiesCount: 1,
     progress: 0,
     colors: ["#FF9800", "#F57C00"],
   },
   {
     id: "respiration",
-    title: "Unité des cellules.",
+    title: "Respiration",
     description:
-      "Explorez comment l'appareil digestif des animaux s'adapte aux conditions de leur environnement",
+      "Découvrir les différents modes de respiration chez les animaux",
     icon: "lungs",
     iconType: "MaterialCommunityIcons",
-    activitiesCount: 2,
+    activitiesCount: 1,
     progress: 0,
     colors: ["#26A69A", "#00796B"],
   },
@@ -115,18 +99,18 @@ const celluleSequences: Sequence[] = [
 
 const chapterData = {
   plants: {
-    title: "Les écosystèmes et leurs composantes.",
+    title: "Plant Kingdom",
     sequences: plantSequences,
     colors: ["#4CAF50", "#2E7D32"],
   },
   animals: {
-    title: "Les systèmes organiques selon l’environnement.",
+    title: "Animal Kingdom",
     sequences: animalSequences,
     colors: ["#FF5722", "#E64A19"],
   },
   ecosystems: {
-    title: "La cellule, unité structurale et fonctionnelle du vivant.",
-    sequences: celluleSequences,
+    title: "Ecosystems",
+    sequences: [],
     colors: ["#009688", "#00796B"],
   },
 };
@@ -171,9 +155,16 @@ export default function SequenceSelector({
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{chapterInfo.title}</Text>
           <Text style={styles.headerSubtitle}>
-          Sélectionnez une séquence pour continuer.
+            Select a sequence to continue
           </Text>
         </LinearGradient>
+      </View>
+
+      <View style={styles.breadcrumbs}>
+        <Text style={styles.breadcrumbText}>
+          <Text style={styles.breadcrumbCourse}>{course}</Text> /{" "}
+          <Text style={styles.breadcrumbChapter}>{chapterInfo.title}</Text>
+        </Text>
       </View>
 
       <View style={styles.sequencesContainer}>
@@ -220,8 +211,8 @@ export default function SequenceSelector({
                       <Text style={styles.sequenceStatsText}>
                         {sequence.activitiesCount}{" "}
                         {sequence.activitiesCount === 1
-                          ? "Séances"
-                          : "Séances"}
+                          ? "Activity"
+                          : "Activities"}
                       </Text>
                     </View>
 
@@ -255,8 +246,18 @@ export default function SequenceSelector({
             </Animatable.View>
           ))
         ) : (
-          <View>
-            
+          <View style={styles.emptyState}>
+            <MaterialCommunityIcons
+              name="book-open-page-variant"
+              size={60}
+              color="#ccc"
+            />
+            <Text style={styles.emptyStateText}>
+              No sequences available yet
+            </Text>
+            <Text style={styles.emptyStateSubtext}>
+              Check back soon for new content!
+            </Text>
           </View>
         )}
       </View>

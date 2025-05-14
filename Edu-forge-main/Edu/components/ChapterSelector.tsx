@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -34,19 +33,19 @@ type Chapter = {
 const biologyChapters: Chapter[] = [
   {
     id: "plants",
-    title: "Les écosystèmes et leurs composantes.",
+    title: "Plant Kingdom",
     description:
-      "Explorez les différents types d'écosystèmes",
+      "Learn about the diverse world of plants and their classification",
     icon: "leaf",
     iconType: "Ionicons",
-    sequencesCount: 2,
+    sequencesCount: 3,
     progress: 0,
   },
   {
     id: "animals",
-    title: "Les systèmes organiques selon l’environnement",
+    title: "Animal Kingdom",
     description:
-      "Découvrez la diversité fascinante des animaux",
+      "Explore the fascinating diversity of animals and their characteristics",
     icon: "paw",
     iconType: "MaterialCommunityIcons",
     sequencesCount: 2,
@@ -54,19 +53,19 @@ const biologyChapters: Chapter[] = [
   },
   {
     id: "ecosystems",
-    title: " La cellule, unité structurale et fonctionnelle du vivant.",
+    title: "Ecosystems",
     description:
-      "Comprenez le rôle fondamental de la cellule dans l’organisation du vivant",
+      "Understand how organisms interact with each other and their environment",
     icon: "earth",
     iconType: "MaterialCommunityIcons",
-    sequencesCount: 2,
+    sequencesCount: 0,
     progress: 0,
   },
 ];
 
 const courseData = {
   biology: {
-    title: "SVT",
+    title: "Biology",
     chapters: biologyChapters,
     colors: ["#4CAF50", "#2E7D32"],
   },
@@ -121,9 +120,15 @@ export default function ChapterSelector({
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{courseInfo.title}</Text>
           <Text style={styles.headerSubtitle}>
-          Sélectionnez un chapitre pour continuer.
-                    </Text>
+            Select a chapter to continue
+          </Text>
         </LinearGradient>
+      </View>
+
+      <View style={styles.breadcrumbs}>
+        <Text style={styles.breadcrumbText}>
+          <Text style={styles.breadcrumbCourse}>{course}</Text>
+        </Text>
       </View>
 
       <View style={styles.chaptersContainer}>

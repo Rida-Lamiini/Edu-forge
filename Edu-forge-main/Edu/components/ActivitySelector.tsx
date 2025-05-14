@@ -19,18 +19,11 @@ type SequenceType =
   | "scientific_method"
   | "respiration";
 type ActivityType =
-  | "A1"
-  | "A2"
-  | "A3"
-  | "A4"
-  | "A5"
-  | "A6"
-  | "A7"
-  | "A8"
-  | "A9"
-  | "A10"
-  | "A11"
-  | "A12";
+  | "plants"
+  | "oaks"
+  | "birds"
+  | "cricket_experiment"
+  | "pond_respiration";
 
 type ActivitySelectorProps = {
   course: CourseType;
@@ -53,10 +46,10 @@ type Activity = {
 
 const classificationActivities: Activity[] = [
   {
-    id: "A1",
-    title: "Les composantes des différents écosystèmes",
+    id: "plants",
+    title: "Plant Classification",
     description:
-      "Explorez les différentes composantes des écosystèmes",
+      "Learn to identify different types of plants based on their characteristics",
     icon: "leaf",
     iconType: "MaterialCommunityIcons",
     colors: ["#4CAF50", "#2E7D32"],
@@ -64,172 +57,80 @@ const classificationActivities: Activity[] = [
     completed: false,
   },
   {
-    id: "A2",
-    title: "L’origine de la diversité des écosystèmes",
+    id: "birds",
+    title: "Bird Identification",
     description:
-      "Apprenez à identifier quatre types de mésanges à l'aide d'une clé de détermination",
+      "Learn to identify four types of tit birds using a determination key",
     icon: "bird",
     iconType: "MaterialCommunityIcons",
     colors: ["#2196F3", "#1976D2"],
     activityNumber: 2,
     completed: false,
   },
-  
-
-];
-const classificationActivities1: Activity[] = [
   {
-    id: "A3",
-    title: "Les critères de classification des êtres vivants",
+    id: "oaks",
+    title: "Oak Tree Identification",
     description:
-      "Explorez les différents critères utilisés pour classer les êtres vivants",
-    icon: "leaf",
+      "Learn to identify three types of oak trees using a determination key",
+    icon: "tree",
     iconType: "MaterialCommunityIcons",
-    colors: ["#4CAF50", "#2E7D32"],
-    activityNumber: 1,
+    colors: ["#FF9800", "#F57C00"],
+    activityNumber: 3,
     completed: false,
   },
-  {
-    id: "A4",
-    title: "Classer les êtres vivants à l’aide des clés de détermination",
-    description:
-      "Apprenez à utiliser des clés de détermination pour classer différents êtres vivants",
-    icon: "bird",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#2196F3", "#1976D2"],
-    activityNumber: 2,
-    completed: false,
-  },
-  
-
 ];
 
 const scientificMethodActivities: Activity[] = [
   {
-    id: "A5",
-    title: "Mise en évidence de la respiration chez les êtres vivants",
+    id: "cricket_experiment",
+    title: "Démarche Expérimentale",
     description:
       "Apprendre les étapes de la démarche expérimentale avec l'exemple de la respiration des criquets",
     icon: "flask",
     iconType: "MaterialCommunityIcons",
     colors: ["#FF9800", "#F57C00"],
-    activityNumber: 1,
-    completed: false,
-  },
-  {
-    id: "A6",
-    title: "L’appareil respiratoire des animaux dans différents milieux",
-    description:
-      "Apprendre les étapes de la démarche expérimentale avec l'exemple de la respiration des criquets",
-    icon: "flask",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#FF9800", "#F57C00"],
-    activityNumber: 1,
-    completed: false,
-  },
-];
-const respirationActivities1: Activity[] = [
-  {
-    id: "A7",
-    title: "L’appareil digestif dans différents milieux",
-    description:
-      "Découvrez comment l’appareil digestif s’adapte selon le régime alimentaire",
-    icon: "water",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#26A69A", "#00796B"],
-    activityNumber: 1,
-    completed: false,
-  },
-  {
-    id: "A8",
-    title: "Tube digestif et régime alimentaire",
-    description:
-      "Comprenez le lien entre la forme du tube digestif et le régime alimentaire des animaux.",
-    icon: "water",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#26A69A", "#00796B"],
-    activityNumber: 1,
-    completed: false,
-  },
-];
-const celluleMethodActivities: Activity[] = [
-  {
-    id: "A9",
-    title: "Le microscope",
-    description:
-      "Explorez le fonctionnement du microscope et son rôle dans l'observation du monde microscopique.",
-    icon: "flask",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#FF9800", "#F57C00"],
-    activityNumber: 1,
-    completed: false,
-  },
-  {
-    id: "A10",
-    title: "Observation des différents types de cellules",
-    description:
-      "Identifiez et comparez les cellules animales et végétales grâce à l'observation au microscope.",
-    icon: "flask",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#FF9800", "#F57C00"],
-    activityNumber: 1,
-    completed: false,
-  },
-];
-const respirationActivities: Activity[] = [
-  {
-    id: "A11",
-    title: "Constituants de la cellule et leurs fonctions",
-    description:
-      "Explorez les différentes structures de la cellule et comprenez le rôle de chaque constituant.",
-    icon: "water",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#26A69A", "#00796B"],
-    activityNumber: 1,
-    completed: false,
-  },
-  {
-    id: "A12",
-    title: "La cellule, unité structurale du vivant",
-    description:
-      "Découvrez les structures de la cellule et la fonction de chaque élément.",
-    icon: "water",
-    iconType: "MaterialCommunityIcons",
-    colors: ["#26A69A", "#00796B"],
     activityNumber: 1,
     completed: false,
   },
 ];
 
+const respirationActivities: Activity[] = [
+  {
+    id: "pond_respiration",
+    title: "Modes de respiration dans un étang",
+    description:
+      "Classifiez les animaux d'un étang selon leurs modes et organes de respiration",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#26A69A", "#00796B"],
+    activityNumber: 1,
+    completed: false,
+  },
+];
 
 const sequenceData = {
   classification: {
-    title: "Diversité des écosystèmes et leur unité.",
+    title: "Classification",
     activities: classificationActivities,
     colors: ["#4CAF50", "#2E7D32"],
   },
   anatomy: {
-    title: " Classification des êtres vivants.",
-    activities: classificationActivities1,
+    title: "Plant Anatomy",
+    activities: [],
     colors: ["#FF9800", "#F57C00"],
   },
-  respiration1: {
-    title: "Appareil digestif selon l’environnement.",
-    activities: respirationActivities1,
+  lifecycle: {
+    title: "Plant Lifecycle",
+    activities: [],
     colors: ["#9C27B0", "#7B1FA2"],
   },
   scientific_method: {
-    title: "Appareil respiratoire selon l’environnement.",
+    title: "Méthode Scientifique",
     activities: scientificMethodActivities,
     colors: ["#FF9800", "#F57C00"],
   },
-  cellule_method: {
-    title: "Diversité des cellules.",
-    activities: celluleMethodActivities,
-    colors: ["#FF9800", "#F57C00"],
-  },
   respiration: {
-    title: "Unité des cellules.",
+    title: "Respiration",
     activities: respirationActivities,
     colors: ["#26A69A", "#00796B"],
   },
@@ -276,12 +177,18 @@ export default function ActivitySelector({
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{sequenceInfo.title}</Text>
           <Text style={styles.headerSubtitle}>
-          Sélectionnez un cours pour commencer l'apprentissage.
+            Select an activity to start learning
           </Text>
         </LinearGradient>
       </View>
 
-     
+      <View style={styles.breadcrumbs}>
+        <Text style={styles.breadcrumbText}>
+          <Text style={styles.breadcrumbCourse}>{course}</Text> /{" "}
+          <Text style={styles.breadcrumbChapter}>{chapter}</Text> /{" "}
+          <Text style={styles.breadcrumbSequence}>{sequenceInfo.title}</Text>
+        </Text>
+      </View>
 
       <View style={styles.activitiesContainer}>
         {activities.map((activity, index) => (
@@ -327,7 +234,7 @@ export default function ActivitySelector({
                     </View>
                   ) : (
                     <View style={styles.startBadge}>
-                      <Text style={styles.startText}>Commencer le cours</Text>
+                      <Text style={styles.startText}>Start Activity</Text>
                     </View>
                   )}
 
