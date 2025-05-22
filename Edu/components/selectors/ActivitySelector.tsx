@@ -19,7 +19,8 @@ type ActivityType =
   | "activity2"
   | "activity3"
   | "activity4"
-  | "activity5";
+  | "activity5"
+  | "Ch3Sequence1Sean1activity1"
 
 type ActivitySelectorProps = {
   chapitre: ChapitreType;
@@ -155,8 +156,141 @@ const chapitre2Sequence1Seance1Activities: Activity[] = [
     activityNumber: 2,
     completed: false,
   },
+  
+];
+const chapitre3Sequence1Seance1Activities: Activity[] = [
+  {
+    id: "activity1",
+    title: "Activité 1",
+    description: "Constituants du microscope et leurs rôles.",
+    icon: "fish",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#2196F3", "#1976D2"],
+    activityNumber: 1,
+    completed: false,
+  },
+  {
+    id: "activity2",
+    title: "Activité 2",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  
+];
+const chapitre3Sequence1Seance2Activities: Activity[] = [
+  {
+    id: "activity1",
+    title: "Activité 1",
+    description: "Dimensions d’une cellule.",
+    icon: "fish",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#2196F3", "#1976D2"],
+    activityNumber: 1,
+    completed: false,
+  },
+  {
+    id: "activity2",
+    title: "Activité 2",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  
+];
+const chapitre3Sequence2Seance1Activities: Activity[] = [
+  {
+    id: "activity1",
+    title: "Activité 1",
+    description: "Dimensions d’une cellule.",
+    icon: "fish",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#2196F3", "#1976D2"],
+    activityNumber: 1,
+    completed: false,
+  },
+  {
+    id: "activity2",
+    title: "Activité 2",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  {
+    id: "activity3",
+    title: "Activité 3",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  {
+    id: "activity4",
+    title: "Activité 4",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  {
+    id: "activity5",
+    title: "Activité 5",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  
 ];
 
+const chapitre3Sequence2Seance2Activities: Activity[] = [
+  {
+    id: "activity1",
+    title: "Activité 1",
+    description: "Dimensions d’une cellule.",
+    icon: "fish",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#2196F3", "#1976D2"],
+    activityNumber: 1,
+    completed: false,
+  },
+  {
+    id: "activity2",
+    title: "Activité 2",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  {
+    id: "activity2",
+    title: "Activité 2",
+    description: "Étude de la respiration des poissons.",
+    icon: "water",
+    iconType: "MaterialCommunityIcons",
+    colors: ["#00BCD4", "#0097A7"],
+    activityNumber: 2,
+    completed: false,
+  },
+  
+];
 // Create a function to get the correct activities based on chapitre, sequence, and seance
 function getActivitiesForSeance(
   chapitre: ChapitreType,
@@ -179,6 +313,16 @@ function getActivitiesForSeance(
         // Return activities for chapitre2, sequence1, seance2
         return chapitre2Sequence1Seance1Activities; // Change this to the correct set when available
       }
+    }
+  }else if (chapitre === "chapitre3") {
+    if (sequence === "sequence1") {
+      return seance === "seance1"
+        ? chapitre3Sequence1Seance1Activities
+        : chapitre3Sequence1Seance2Activities;
+    } else if (sequence === "sequence2") {
+      return seance === "seance1"
+        ? chapitre3Sequence2Seance1Activities
+        : chapitre3Sequence2Seance2Activities;
     }
   }
   // Default to an empty array if no matching activities

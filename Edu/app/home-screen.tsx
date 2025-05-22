@@ -12,6 +12,12 @@ import BirdClassificationGame from "../components/BirdClassificationGame";
 import ScientificMethodActivity from "../components/ScientificMethodActivity";
 import PondRespirationActivity from "../components/PondRespirationActivity";
 import PlantClassificationActivity from "../components/PlantClassificationActivity";
+import  ClassificationActivity  from "../components/Sequence2Unitedescellulesactivite1";
+import  Activite2Screen  from "../components/Sequence2Unitedescellulesactivite2";
+import  App  from "../components/Sequence2Unitedescellulesactivite3";
+import  Activity4  from "../components/Sequence2Unitedescellulesactivite4";
+import  Activite5Screen  from "../components/Sequence2Unitedescellulesactivite5";
+
 
 type ChapitreType = "chapitre1" | "chapitre2" | "chapitre3" | null;
 type SequenceType = "sequence1" | "sequence2" | null;
@@ -93,9 +99,40 @@ export default function HomeScreen() {
       // You can add more specific activity mappings for chapitre 2 when needed
       return <PondRespirationActivity onBack={handleBackToActivities} />;
     } else if (chapitre === "chapitre3") {
-      // You can add more specific activity mappings for chapitre 3 when needed
-      return <ScientificMethodActivity onBack={handleBackToActivities} />;
+  if (sequence === "sequence1") {
+    if (seance === "seance1") {
+      // Chapitre 3, Sequence 1, Seance 1
+      if (activity === "activity1")
+        return <BirdClassificationGame onBack={handleBackToActivities} />;
+      if (activity === "activity2")
+        return <BirdClassificationGame onBack={handleBackToActivities} />;
+    } else if (seance === "seance2") {
+      // Chapitre 3, Sequence 1, Seance 2
+      if (activity === "activity1")
+        return <BirdClassificationGame onBack={handleBackToActivities} />;
+      if (activity === "activity2")
+        return <BirdClassificationGame onBack={handleBackToActivities} />;
     }
+  } else if (sequence === "sequence2") {
+    if (seance === "seance1") {
+      if (activity === "activity1")
+        return <ClassificationActivity  onBack={handleBackToActivities} />;
+      if (activity === "activity2")
+        return <Activite2Screen onBack={handleBackToActivities} />;
+      if (activity === "activity3")
+        return <App onBack={handleBackToActivities} />;
+      if (activity === "activity4")
+        return <Activity4 onBack={handleBackToActivities} />;
+      if (activity === "activity5")
+        return <Activite5Screen onBack={handleBackToActivities} />;
+    } else if (seance === "seance2") {
+      if (activity === "activity3")
+        return <PondRespirationActivity onBack={handleBackToActivities} />;
+      if (activity === "activity4")
+        return <PlantClassificationActivity onBack={handleBackToActivities} />;
+    }
+  }
+}
 
     // Default activity
     return <PlantClassificationActivity onBack={handleBackToActivities} />;
