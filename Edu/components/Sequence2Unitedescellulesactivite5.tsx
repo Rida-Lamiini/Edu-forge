@@ -206,29 +206,21 @@ const Activite5Screen: React.FC<Activite5Props> = ({ onBack }) => {
             <Text style={[styles.cellLabel, styles.plantLabel]}>Cellule végétale</Text>
             <Text style={[styles.cellLabel, styles.bacteriaLabel]}>Cellule bactérienne</Text>
             
-            {/* Flèches pointant vers les intersections */}
-            <View style={[styles.arrowContainer, styles.arrowA]}>
-              <View style={styles.arrowLine} />
-              <View style={styles.arrowHead} />
-              <Text style={styles.arrowLabel}>A</Text>
+            {/* Indicateurs de position précis */}
+            <View style={styles.arrowA}>
+              <Text style={styles.arrowText}>A</Text>
             </View>
             
-            <View style={[styles.arrowContainer, styles.arrowB]}>
-              <View style={styles.arrowLine} />
-              <View style={styles.arrowHead} />
-              <Text style={styles.arrowLabel}>B</Text>
+            <View style={styles.arrowB}>
+              <Text style={styles.arrowText}>B</Text>
             </View>
             
-            <View style={[styles.arrowContainer, styles.arrowC]}>
-              <View style={styles.arrowLine} />
-              <View style={styles.arrowHead} />
-              <Text style={styles.arrowLabel}>C</Text>
+            <View style={styles.arrowC}>
+              <Text style={styles.arrowText}>C</Text>
             </View>
             
-            <View style={[styles.arrowContainer, styles.arrowD]}>
-              <View style={styles.arrowLine} />
-              <View style={styles.arrowHead} />
-              <Text style={styles.arrowLabel}>D</Text>
+            <View style={styles.arrowD}>
+              <Text style={styles.arrowText}>D</Text>
             </View>
 
             {/* Zones de texte pour les réponses */}
@@ -465,49 +457,66 @@ const styles = StyleSheet.create({
   bacteriaLabel: {
     bottom: 30,
   },
-  arrowContainer: {
-    position: 'absolute',
-    alignItems: 'center',
-  },
+  // Positions précises des indicateurs
   arrowA: {
-    top: 30,
-    left: '35%',
+    position: 'absolute',
+    top: 85,
+    left: 120,
+    width: 24,
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
   arrowB: {
-    top: '50%',
-    right: 20,
-    transform: [{ rotate: '-90deg' }],
+    position: 'absolute',
+    top: 160,
+    left: 85,
+    width: 24,
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
   arrowC: {
-    bottom: 30,
-    left: '35%',
-    transform: [{ rotate: '180deg' }],
+    position: 'absolute',
+    top: 160,
+    right: 85,
+    width: 24,
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
   arrowD: {
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -15 }],
+    position: 'absolute',
+    top: 140,
+    left: 120,
+    width: 24,
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
-  arrowLine: {
-    width: 2,
-    height: 30,
-    backgroundColor: '#333',
-  },
-  arrowHead: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
-    borderBottomWidth: 12,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: '#333',
-    transform: [{ translateY: -12 }],
-  },
-  arrowLabel: {
-    marginTop: 4,
+  arrowText: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
   },
   zone: {

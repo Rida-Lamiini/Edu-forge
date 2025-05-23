@@ -17,6 +17,7 @@ import  Activite2Screen  from "../components/Sequence2Unitedescellulesactivite2"
 import  App  from "../components/Sequence2Unitedescellulesactivite3";
 import  Activity4  from "../components/Sequence2Unitedescellulesactivite4";
 import  Activite5Screen  from "../components/Sequence2Unitedescellulesactivite5";
+import  Sequence2Unitedescelluleseance2sactivite1  from "../components/Sequence2Unitedescelluleseance2sactivite1";
 
 
 type ChapitreType = "chapitre1" | "chapitre2" | "chapitre3" | null;
@@ -126,8 +127,8 @@ export default function HomeScreen() {
       if (activity === "activity5")
         return <Activite5Screen onBack={handleBackToActivities} />;
     } else if (seance === "seance2") {
-      if (activity === "activity3")
-        return <PondRespirationActivity onBack={handleBackToActivities} />;
+      if (activity === "activity1")
+        return <Sequence2Unitedescelluleseance2sactivite1 onBack={handleBackToActivities} />;
       if (activity === "activity4")
         return <PlantClassificationActivity onBack={handleBackToActivities} />;
     }

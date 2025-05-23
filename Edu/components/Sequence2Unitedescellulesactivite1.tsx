@@ -16,7 +16,7 @@ import {
   NativeSyntheticEvent
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av'; // Import du module audio
+import { Audio } from 'expo-av';
 
 type Organism = {
   id: string;
@@ -66,36 +66,18 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   const [checkResult, setCheckResult] = useState({ allCorrect: false, correctCount: 0, totalCount: 0 });
   const [currentDraggingItem, setCurrentDraggingItem] = useState<string | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [selectedOrganism, setSelectedOrganism] = useState<string | null>(null);
+  const [showPlacementModal, setShowPlacementModal] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
-  const panRefs = useRef<{ [key: string]: Animated.ValueXY }>({});
-  const panResponders = useRef<{ [key: string]: any }>({});
-  const dropZoneRefs = useRef<DropZoneRefs>({
-    unicellulaire: null,
-    pluricellulaire: null,
-    eucaryote: null,
-    procaryote: null
-  });
-
-  const soundObject = useRef<Audio.Sound | null>(null); // Référence vers l'objet son
+  const soundObject = useRef<Audio.Sound | null>(null);
 
   const { width } = Dimensions.get('window');
-  const tableWidth = width * 0.9;
-  const cellWidth = tableWidth / 2;
 
-  const dropZones = {
-    unicellulaire: { x: width * 0.25, y: 150, width: cellWidth, height: 120 },
-    pluricellulaire: { x: width * 0.75, y: 150, width: cellWidth, height: 120 },
-    eucaryote: { x: width * 0.25, y: 350, width: cellWidth, height: 120 },
-    procaryote: { x: width * 0.75, y: 350, width: cellWidth, height: 120 },
-  };
-
-  // Charger et jouer la musique en boucle au montage
   useEffect(() => {
     loadBackgroundMusic();
-
     return () => {
       if (soundObject.current) {
-        soundObject.current.unloadAsync(); // Nettoyage lorsqu'on quitte la page
+        soundObject.current.unloadAsync();
       }
     };
   }, []);
@@ -103,7 +85,7 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   const loadBackgroundMusic = async () => {
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/sounds/fun-learning-children-happy-education-music-256422.mp3') // 👈 MODIFIE CE CHEMIN SI BESOIN
+        require('../assets/sounds/fun-learning-children-happy-education-music-256422.mp3')
       );
       soundObject.current = sound;
       await soundObject.current.setIsLoopingAsync(true);
@@ -117,102 +99,50 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     setScrollOffset(event.nativeEvent.contentOffset.y);
   };
 
-  const createPanResponder = (organismId: string) => {
-    return PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e, gestureState) => {
-        setCurrentDraggingItem(organismId);
-        setScrollEnabled(false);
-        panRefs.current[organismId].extractOffset();
-      },
-      onPanResponderMove: Animated.event(
-        [null, {
-          dx: panRefs.current[organismId].x,
-          dy: panRefs.current[organismId].y
-        }],
-        { useNativeDriver: false }
-      ),
-      onPanResponderRelease: (e, gestureState) => {
-        setScrollEnabled(true);
-        panRefs.current[organismId].flattenOffset();
-
-        const dropZone = findDropZone(
-          gestureState.moveX,
-          gestureState.moveY + scrollOffset
-        );
-
-        if (dropZone) {
-          handleDrop(organismId, dropZone);
-        }
-
-        Animated.spring(panRefs.current[organismId], {
-          toValue: { x: 0, y: 0 },
-          friction: 5,
-          useNativeDriver: false
-        }).start();
-        setCurrentDraggingItem(null);
-      },
-      onPanResponderTerminate: () => {
-        setScrollEnabled(true);
-        Animated.spring(panRefs.current[organismId], {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false
-        }).start();
-      }
-    });
+  // Nouvelle approche : utiliser un modal pour placer les organismes
+  const handleOrganismSelect = (organismId: string) => {
+    setSelectedOrganism(organismId);
+    setShowPlacementModal(true);
   };
 
-  const findDropZone = (x: number, y: number) => {
-    for (const [key, zone] of Object.entries(dropZones)) {
-      if (
-        x > zone.x - zone.width / 2 &&
-        x < zone.x + zone.width / 2 &&
-        y > zone.y - zone.height / 2 &&
-        y < zone.y + zone.height / 2
-      ) {
-        return key as keyof typeof dropZones;
-      }
-    }
-    return null;
-  };
-
-  const handleDrop = (itemId: string, dropZone: keyof typeof dropZones) => {
-    const organism = organisms.find(org => org.id === itemId);
-    if (!organism) return;
+  const handlePlacement = (organismId: string, category: string, isTable1: boolean) => {
     const newTables = { ...tables };
-    const isTable1 = dropZone === 'unicellulaire' || dropZone === 'pluricellulaire';
-
+    
     if (isTable1) {
-      newTables.table1.unicellulaire = newTables.table1.unicellulaire.filter(id => id !== itemId);
-      newTables.table1.pluricellulaire = newTables.table1.pluricellulaire.filter(id => id !== itemId);
-      newTables.table1[dropZone].push(itemId);
+      // Retirer de toutes les zones du tableau 1
+      newTables.table1.unicellulaire = newTables.table1.unicellulaire.filter(id => id !== organismId);
+      newTables.table1.pluricellulaire = newTables.table1.pluricellulaire.filter(id => id !== organismId);
+      
+      // Ajouter dans la nouvelle zone
+      newTables.table1[category as 'unicellulaire' | 'pluricellulaire'].push(organismId);
     } else {
-      newTables.table2.eucaryote = newTables.table2.eucaryote.filter(id => id !== itemId);
-      newTables.table2.procaryote = newTables.table2.procaryote.filter(id => id !== itemId);
-      newTables.table2[dropZone].push(itemId);
+      // Retirer de toutes les zones du tableau 2
+      newTables.table2.eucaryote = newTables.table2.eucaryote.filter(id => id !== organismId);
+      newTables.table2.procaryote = newTables.table2.procaryote.filter(id => id !== organismId);
+      
+      // Ajouter dans la nouvelle zone
+      newTables.table2[category as 'eucaryote' | 'procaryote'].push(organismId);
     }
 
     setTables(newTables);
 
+    // Mettre à jour l'état des organismes
     setOrganisms(prev =>
-      prev.map(org => ({
-        ...org,
-        placedInTable1: isTable1 ? true : org.placedInTable1,
-        placedInTable2: !isTable1 ? true : org.placedInTable2,
-        isPlaced: org.placedInTable1 || org.placedInTable2
-      }))
+      prev.map(org => {
+        if (org.id === organismId) {
+          return {
+            ...org,
+            placedInTable1: isTable1 ? true : org.placedInTable1,
+            placedInTable2: isTable1 ? org.placedInTable2 : true,
+            isPlaced: isTable1 ? 
+              (true && org.placedInTable2) : 
+              (org.placedInTable1 && true)
+          };
+        }
+        return org;
+      })
     );
   };
-
-  useEffect(() => {
-    organisms.forEach(org => {
-      if (!panRefs.current[org.id]) {
-        panRefs.current[org.id] = new Animated.ValueXY();
-      }
-      panResponders.current[org.id] = createPanResponder(org.id);
-    });
-  }, [organisms]);
 
   const showSolution = () => {
     setTables({
@@ -239,6 +169,7 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
       Alert.alert("Classification incomplète", "Veuillez placer tous les organismes dans les deux tableaux avant de vérifier.");
       return;
     }
+
     let allCorrect = true;
     let correctCount = 0;
     const totalCount = organisms.length * 2;
@@ -266,56 +197,194 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
       placedInTable1: false,
       placedInTable2: false
     })));
-    Object.values(panRefs.current).forEach(pan => {
-      pan.setValue({ x: 0, y: 0 });
-    });
   };
 
-  const renderOrganismsInDropZone = (zone: keyof typeof dropZones) => {
-    const orgIds = zone in tables.table1 
-      ? tables.table1[zone as keyof typeof tables.table1] 
-      : tables.table2[zone as keyof typeof tables.table2];
-
+  // Fonction pour rendre les organismes dans une zone de dépôt
+  const renderOrganismsInDropZone = (zone: string) => {
+    let orgIds: string[] = [];
+    
+    if (zone === 'unicellulaire' || zone === 'pluricellulaire') {
+      orgIds = tables.table1[zone as 'unicellulaire' | 'pluricellulaire'];
+    } else {
+      orgIds = tables.table2[zone as 'eucaryote' | 'procaryote'];
+    }
+    
     return orgIds.map(id => {
       const organism = organisms.find(org => org.id === id);
-      return organism ? (
-        <View key={organism.id} style={styles.placedOrganism}>
-          <Image source={organism.image} style={styles.organismImage} />
-          <Text style={styles.organismName}>{organism.name}</Text>
-        </View>
-      ) : null;
-    });
-  };
-
-  const renderDraggableOrganisms = () => {
-    return organisms.map(organism => {
-      if (organism.isPlaced) return null;
-      if (!panRefs.current[organism.id]) {
-        panRefs.current[organism.id] = new Animated.ValueXY();
-      }
-      if (!panResponders.current[organism.id]) {
-        panResponders.current[organism.id] = createPanResponder(organism.id);
-      }
+      if (!organism) return null;
+      
       return (
-        <Animated.View
+        <TouchableOpacity
           key={organism.id}
-          style={[
-            styles.draggableOrganism,
-            {
-              transform: [
-                { translateX: panRefs.current[organism.id].x },
-                { translateY: panRefs.current[organism.id].y }
-              ],
-              zIndex: currentDraggingItem === organism.id ? 100 : 1
+          style={styles.placedOrganism}
+          onPress={() => {
+            // Retirer l'organisme de cette zone
+            if (zone === 'unicellulaire' || zone === 'pluricellulaire') {
+              // Retirer du tableau 1
+              setTables(prev => ({
+                ...prev,
+                table1: {
+                  ...prev.table1,
+                  [zone]: prev.table1[zone as 'unicellulaire' | 'pluricellulaire'].filter(orgId => orgId !== id)
+                }
+              }));
+              
+              // Mettre à jour l'état de l'organisme
+              setOrganisms(prev =>
+                prev.map(org => {
+                  if (org.id === id) {
+                    return {
+                      ...org,
+                      placedInTable1: false,
+                      isPlaced: false
+                    };
+                  }
+                  return org;
+                })
+              );
+            } else {
+              // Retirer du tableau 2
+              setTables(prev => ({
+                ...prev,
+                table2: {
+                  ...prev.table2,
+                  [zone]: prev.table2[zone as 'eucaryote' | 'procaryote'].filter(orgId => orgId !== id)
+                }
+              }));
+              
+              // Mettre à jour l'état de l'organisme
+              setOrganisms(prev =>
+                prev.map(org => {
+                  if (org.id === id) {
+                    return {
+                      ...org,
+                      placedInTable2: false,
+                      isPlaced: false
+                    };
+                  }
+                  return org;
+                })
+              );
             }
-          ]}
-          {...panResponders.current[organism.id].panHandlers}
+          }}
         >
           <Image source={organism.image} style={styles.organismImage} />
           <Text style={styles.organismName}>{organism.name}</Text>
-        </Animated.View>
+        </TouchableOpacity>
       );
     });
+  };
+
+  // Fonction pour rendre les organismes déplaçables
+  const renderDraggableOrganisms = () => {
+    return organisms
+      .filter(organism => !organism.isPlaced)
+      .map(organism => (
+        <TouchableOpacity
+          key={organism.id}
+          style={styles.draggableOrganism}
+          onPress={() => handleOrganismSelect(organism.id)}
+        >
+          <Image source={organism.image} style={styles.organismImage} />
+          <Text style={styles.organismName}>{organism.name}</Text>
+        </TouchableOpacity>
+      ));
+  };
+
+  // Modal pour le placement des organismes
+  const PlacementModal = () => {
+    const organism = organisms.find(org => org.id === selectedOrganism);
+    if (!organism) return null;
+
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showPlacementModal}
+        onRequestClose={() => setShowPlacementModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Placer {organism.name}</Text>
+            </View>
+            <View style={styles.modalBody}>
+              <Image source={organism.image} style={styles.modalOrganismImage} />
+              
+              {/* Tableau 1 */}
+              <View style={styles.placementSection}>
+                <Text style={styles.placementTitle}>Classification selon le nombre de cellules</Text>
+                <View style={styles.placementButtons}>
+                  <TouchableOpacity 
+                    style={[styles.placementButton, organism.placedInTable1 && styles.placementButtonDisabled]}
+                    onPress={() => {
+                      handlePlacement(organism.id, 'unicellulaire', true);
+                      if (organism.placedInTable2) {
+                        setShowPlacementModal(false);
+                      }
+                    }}
+                    disabled={organism.placedInTable1}
+                  >
+                    <Text style={styles.placementButtonText}>Unicellulaire</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.placementButton, organism.placedInTable1 && styles.placementButtonDisabled]}
+                    onPress={() => {
+                      handlePlacement(organism.id, 'pluricellulaire', true);
+                      if (organism.placedInTable2) {
+                        setShowPlacementModal(false);
+                      }
+                    }}
+                    disabled={organism.placedInTable1}
+                  >
+                    <Text style={styles.placementButtonText}>Pluricellulaire</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              
+              {/* Tableau 2 */}
+              <View style={styles.placementSection}>
+                <Text style={styles.placementTitle}>Classification selon le type de cellules</Text>
+                <View style={styles.placementButtons}>
+                  <TouchableOpacity 
+                    style={[styles.placementButton, organism.placedInTable2 && styles.placementButtonDisabled]}
+                    onPress={() => {
+                      handlePlacement(organism.id, 'eucaryote', false);
+                      if (organism.placedInTable1) {
+                        setShowPlacementModal(false);
+                      }
+                    }}
+                    disabled={organism.placedInTable2}
+                  >
+                    <Text style={styles.placementButtonText}>Eucaryote</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.placementButton, organism.placedInTable2 && styles.placementButtonDisabled]}
+                    onPress={() => {
+                      handlePlacement(organism.id, 'procaryote', false);
+                      if (organism.placedInTable1) {
+                        setShowPlacementModal(false);
+                      }
+                    }}
+                    disabled={organism.placedInTable2}
+                  >
+                    <Text style={styles.placementButtonText}>Procaryote</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={[styles.button, styles.modalButton]}
+                onPress={() => setShowPlacementModal(false)}
+              >
+                <Text style={styles.buttonText}>Fermer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   const ResultsPanel = () => (
@@ -375,12 +444,37 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     </Modal>
   );
 
+  // Afficher le statut de placement pour chaque organisme
+  const renderOrganismStatus = () => {
+    return organisms.map(organism => {
+      const isComplete = organism.placedInTable1 && organism.placedInTable2;
+      const isPartial = organism.placedInTable1 || organism.placedInTable2;
+      
+      return (
+        <View key={organism.id} style={styles.statusItem}>
+          <Image source={organism.image} style={styles.statusImage} />
+          <Text style={styles.statusName}>{organism.name}</Text>
+          <View style={styles.statusIndicators}>
+            <View style={[
+              styles.statusDot, 
+              organism.placedInTable1 ? styles.statusDotComplete : styles.statusDotIncomplete
+            ]} />
+            <View style={[
+              styles.statusDot, 
+              organism.placedInTable2 ? styles.statusDotComplete : styles.statusDotIncomplete
+            ]} />
+          </View>
+        </View>
+      );
+    });
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollContainer}
-        scrollEnabled={scrollEnabled}
+        scrollEnabled={true}
         showsVerticalScrollIndicator={true}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -388,10 +482,8 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Ionicons name="arrow-back" size={35} color="#2196f3" />
         </TouchableOpacity>
-
         <Text style={styles.title}>Classification des êtres vivants</Text>
 
-        {/* Contenu de la page */}
         <View style={styles.tableContainer}>
           <Text style={styles.tableTitle}>Classification selon le nombre de cellules</Text>
           <View style={styles.table}>
@@ -400,16 +492,10 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
               <Text style={styles.headerText}>Pluricellulaires</Text>
             </View>
             <View style={styles.tableRow}>
-              <View
-                style={styles.tableCell}
-                ref={ref => dropZoneRefs.current.unicellulaire = ref}
-              >
+              <View style={styles.tableCell}>
                 {renderOrganismsInDropZone('unicellulaire')}
               </View>
-              <View
-                style={styles.tableCell}
-                ref={ref => dropZoneRefs.current.pluricellulaire = ref}
-              >
+              <View style={styles.tableCell}>
                 {renderOrganismsInDropZone('pluricellulaire')}
               </View>
             </View>
@@ -424,24 +510,38 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
               <Text style={styles.headerText}>Procaryotes</Text>
             </View>
             <View style={styles.tableRow}>
-              <View
-                style={styles.tableCell}
-                ref={ref => dropZoneRefs.current.eucaryote = ref}
-              >
+              <View style={styles.tableCell}>
                 {renderOrganismsInDropZone('eucaryote')}
               </View>
-              <View
-                style={styles.tableCell}
-                ref={ref => dropZoneRefs.current.procaryote = ref}
-              >
+              <View style={styles.tableCell}>
                 {renderOrganismsInDropZone('procaryote')}
               </View>
             </View>
           </View>
         </View>
 
+        <View style={styles.statusContainer}>
+          <Text style={styles.subtitle}>Statut de placement</Text>
+          <View style={styles.statusLegend}>
+            <View style={styles.legendItem}>
+              <View style={[styles.statusDot, styles.statusDotComplete]} />
+              <Text style={styles.legendText}>Placé</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.statusDot, styles.statusDotIncomplete]} />
+              <Text style={styles.legendText}>Non placé</Text>
+            </View>
+          </View>
+          <View style={styles.statusGrid}>
+            {renderOrganismStatus()}
+          </View>
+        </View>
+
         <View style={styles.organismsContainer}>
-          <Text style={styles.subtitle}>Glissez les organismes dans la bonne catégorie</Text>
+          <Text style={styles.subtitle}>Appuyez sur un organisme pour le placer</Text>
+          <Text style={styles.instructions}>
+            Chaque organisme doit être placé dans les deux tableaux
+          </Text>
           <View style={styles.organismsGrid}>
             {renderDraggableOrganisms()}
           </View>
@@ -461,6 +561,7 @@ const ClassificationActivity: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
         <View style={styles.bottomPadding} />
       </ScrollView>
+      <PlacementModal />
       <ResultsPanel />
     </SafeAreaView>
   );
@@ -487,6 +588,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 8,
     color: '#555',
+  },
+  instructions: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 10,
+    color: '#666',
+    fontStyle: 'italic',
   },
   backButton: {
     position: 'absolute',
@@ -552,6 +660,14 @@ const styles = StyleSheet.create({
     margin: 10,
     alignItems: 'center',
     width: 100,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   placedOrganism: {
     margin: 5,
@@ -668,6 +784,99 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 50,
+  },
+  modalOrganismImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  placementSection: {
+    marginVertical: 10,
+  },
+  placementTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  placementButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  placementButton: {
+    backgroundColor: '#2196f3',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  placementButtonDisabled: {
+    backgroundColor: '#bdbdbd',
+  },
+  placementButtonText: {
+    color: 'white',
+    fontWeight: '500',
+  },
+  statusContainer: {
+    marginVertical: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 12,
+    elevation: 2,
+  },
+  statusGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  statusItem: {
+    alignItems: 'center',
+    width: 80,
+    marginVertical: 8,
+  },
+  statusImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  statusName: {
+    fontSize: 10,
+    textAlign: 'center',
+    marginVertical: 4,
+  },
+  statusIndicators: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  statusDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginHorizontal: 3,
+  },
+  statusDotComplete: {
+    backgroundColor: '#4caf50',
+  },
+  statusDotIncomplete: {
+    backgroundColor: '#f44336',
+  },
+  statusLegend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 8,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  legendText: {
+    fontSize: 12,
+    marginLeft: 5,
   },
 });
 
